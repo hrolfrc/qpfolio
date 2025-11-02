@@ -1,9 +1,9 @@
+from qpfolio.solvers.base import Solver
 from .types import ProblemSpec, Solution
-from . import types
 import numpy as np
 
 
-def solve_qp(problem: ProblemSpec, solver: "Solver") -> Solution:
+def solve_qp(problem: ProblemSpec, solver: Solver) -> Solution:
     """Dispatch to a concrete solver adapter."""
     return solver.solve(problem)
 
