@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@3.3.0
+  codecov: codecov/codecov@5   # <-- added
 
 jobs:
   lint_and_test:
@@ -21,8 +22,16 @@ jobs:
             ruff --version
             ruff check .
       - run:
-          name: Run tests
-          command: pytest -v --cov=qpfolio --cov-report=term-missing
+          name: Run tests with coverage (XML + terminal)
+          command: |
+            pytest -v \
+              --cov=qpfolio \
+              --cov-report=term-missing \
+              --cov-report=xml:coverage.xml
+      - codecov/upload:
+          file: coverage.xml       # <-- added
+          flags: unittests
+          verbose: true
       - run:
           name: Build wheel
           command: python -m build
