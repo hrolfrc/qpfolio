@@ -1,0 +1,128 @@
+Architecture & Workflow
+=======================
+
+This section explains how ``bib-ami`` works internally. It details the
+high-level architecture, the step-by-step data processing workflow, the
+core software components, and the structure of the final output. This
+provides a deeper understanding for users who wish to know how the tool
+achieves its results.
+
+High-Level Overview
+-------------------
+
+The ``bib-ami`` tool is designed as a modular, file-based pipeline. This
+architecture ensures that the process is both auditable and robust. Each
+major step in the workflow is a distinct phase that takes a file as
+input and produces a new file as output. This allows for easy inspection
+at each stage and enables the process to be resumed from the last
+successful checkpoint in case of failure.
+
+The pipeline consists of four primary phases: Ingestion, Validation,
+Reconciliation, and Reporting.
+
+The Four-Phase Process
+----------------------
+
+These phases directly implement the guiding principles outlined in the
+previous section to transform a collection of source files into a clean,
+verified bibliography.
+
+#. | **Phase 1: Ingestion and Tagging**
+   | The workflow begins by reading all ``.bib`` files from the
+     user-specified input directory. Each entry is parsed and assigned a
+     unique internal ID. This ID ensures that every source record can be
+     traced throughout the entire process, upholding the principle of
+     *Every Input Must Be Accounted For*. The result of this phase is a
+     single, consolidated intermediate file (e.g., ``01_ingested.json``)
+     containing all candidate references.
+
+#. | **Phase 2: Validation and Canonicalization**
+   | This phase establishes the "ground truth" for each record. It
+     iterates through every entry from the ingested file and queries an
+     authoritative source (CrossRef) using the entry’s title and author.
+
+   -  If a DOI is found, it is added to the record as its canonical
+      identifier.
+
+   -  If a DOI already exists, it is validated against the API’s result;
+      any incorrect DOI is replaced.
+
+   This rigorously follows the principle of *Authoritative Data Reigns
+   Supreme*. The output is a new intermediate file (e.g.,
+   ``02_validated.json``) where each record is now enriched with a
+   verified DOI and a validation status.
+
+#. | **Phase 3: Reconciliation and Deduplication**
+   | Using the verified DOIs as the primary key, this phase identifies
+     and merges duplicate records.
+
+   -  All entries sharing the same DOI are grouped together.
+
+   -  For each group, a single "golden record" is created, with its core
+      metadata populated from the authoritative CrossRef data.
+
+   -  User-generated content (e.g., ``note``, ``file`` fields) from all
+      duplicates is merged into this golden record, upholding the
+      principle to *Preserve User Intent*.
+
+   -  For entries that still lack a DOI, a secondary fuzzy-matching
+      algorithm is used to find duplicates based on title and author
+      similarity.
+
+   The output is a new file (e.g., ``03_reconciled.json``) containing a
+   deduplicated list of golden records.
+
+#. | **Phase 4: Triage and Reporting**
+   | The final phase categorizes each golden record and produces the
+     final output. Each record is triaged as ’Verified’, ’Accepted’, or
+     ’Suspect’ based on a set of rules (e.g., an article without a DOI
+     is ’Suspect’). This follows the *Triage, Don’t Discard* principle.
+     The workflow concludes by writing the ’Verified’ and ’Accepted’
+     records to the main output file, and the ’Suspect’ records to a
+     separate file for human review.
+
+Core Components (The Classes)
+-----------------------------
+
+The architecture is implemented using a set of classes, each with a
+single, clear responsibility.
+
+``Ingestor``
+   Responsible for finding, parsing, and tagging all entries from source
+   ``.bib`` files.
+
+``APIClient``
+   Handles all raw HTTP communication with an external API like
+   CrossRef, managing sessions, headers, and retries.
+
+``Validator``
+   Uses the ``APIClient`` to execute the validation logic, determining
+   the canonical DOI and status for each record.
+
+``Reconciler``
+   Contains the business logic for deduplication, both by DOI and fuzzy
+   matching, and for merging user-specific metadata into golden records.
+
+``Triage``
+   Applies the ruleset to classify each golden record as ’Verified’,
+   ’Accepted’, or ’Suspect’.
+
+``Writer``
+   Handles the final step of writing the categorized records to their
+   respective output ``.bib`` files.
+
+Understanding the Output
+------------------------
+
+The final output consists of two main files and a console summary,
+ensuring full transparency.
+
+-  **Main Output File** (e.g., ``cleaned_library.bib``): Contains the
+   high-confidence ’Verified’ and ’Accepted’ records.
+
+-  **Suspect File** (e.g., ``suspect_entries.bib``): Contains all
+   ’Suspect’ records that require manual human review.
+
+-  **Console Summary:** A report printed to the terminal detailing the
+   number of files processed, duplicates removed, DOIs added, and the
+   final count of entries in each category.

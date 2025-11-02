@@ -1,0 +1,87 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- PACKAGES ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{enumitem} % For custom lists
+\usepackage{hyperref} % For clickable links
+
+% --- DOCUMENT SETUP ---
+\geometry{a4paper, margin=1in}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=cyan,
+}
+
+% --- DOCUMENT START ---
+\begin{document}
+
+\section*{Contributing to bib-ami}
+
+First off, thank you for considering contributing to \texttt{bib-ami}! We welcome any help, from reporting a bug to suggesting a new feature. This project is maintained by volunteers in their spare time, so your contributions are highly valued.
+
+To ensure a smooth and effective process for everyone, please read through these guidelines before you start.
+
+\subsection*{How Can I Contribute?}
+
+There are many ways to contribute, and all of them are appreciated.
+We've ordered them from the most common and helpful ways to get involved.
+
+\subsubsection*{1. Reporting Bugs}
+
+This is one of the most valuable ways to contribute.
+If you find a bug, please open an issue on our GitHub repository.
+A great bug report is one that can be reproduced. Please include the following:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{A clear and descriptive title:} e.g., "Fails to merge files with non-ASCII characters in path."
+    \item \textbf{A description of the steps to reproduce the bug:} What command did you run? What was in your input files?
+    \item \textbf{What you expected to happen.}
+    \item \textbf{What actually happened:} Include any error messages or tracebacks.
+    \item \textbf{Your environment:} Your operating system, Python version, and \texttt{bib-ami} version.
+\end{itemize}
+
+\subsubsection*{2. Suggesting Enhancements or New Features}
+
+If you have an idea for a new feature or an improvement to an existing one, we'd love to hear it.
+Please open an issue to start a discussion.
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Start a discussion first:} Before you spend time writing code, please open an issue to propose your idea.
+    This allows us to discuss the feature and make sure it aligns with the project's goals before any work is done.
+    This is the best way to respect everyone's time.
+    \item \textbf{Be clear and concise:} Explain the problem you're trying to solve and how your proposed feature would solve it.
+\end{itemize}
+
+\subsubsection*{3. Improving Documentation}
+
+Clear documentation is essential.
+If you find a typo, think a section is unclear, or believe something is missing, please don't hesitate to open an issue or submit a pull request with your suggested improvements. This is a fantastic way to make your first contribution.
+
+\subsubsection*{4. Submitting Pull Requests}
+
+We welcome pull requests for bug fixes and approved features.
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Prerequisite:} Please ensure there is an open issue discussing the bug or feature before you submit a pull request. This helps us track the work and ensures your contribution is aligned with the project's direction.
+    \item \textbf{Follow the process:}
+        \begin{enumerate}
+            \item Fork the repository and create your branch from \texttt{main}.
+            \item Make your changes. Please adhere to the existing code style.
+            \item Add tests for your changes. We value code quality and need to ensure the tool remains stable.
+            \item Ensure the test suite passes.
+            \item Submit your pull request, linking it to the relevant issue.
+        \end{enumerate}
+\end{itemize}
+
+\subsection*{A Note on Time}
+
+Please remember that this project is maintained on a volunteer basis.
+While we will do our best to review issues and pull requests in a timely manner, there may be delays.
+Starting with a discussion in an issue is the best way to ensure your efforts are not wasted.
+
+Thank you again for your interest in making \texttt{bib-ami} better!
+
+\end{document}

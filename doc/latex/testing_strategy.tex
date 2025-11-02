@@ -1,0 +1,182 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- PREAMBLE: PACKAGES AND SETUP ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{booktabs} 
+\usepackage{enumitem} 
+\usepackage{hyperref} 
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+% --- GEOMETRY ---
+\geometry{a4paper, margin=1in}
+
+% --- HYPERREF SETUP ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={bib-ami Documentation},
+    pdfauthor={bib-ami Team},
+}
+
+% --- LISTINGS (CODE) SETUP ---
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegray},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+
+% --- TITLE ---
+\title{\textbf{bib-ami}: A Bibliography Integrity Manager \\ \large Part 5: For Developers -- The Testing Strategy}
+\author{Documentation}
+\date{\today}
+
+
+% ==================================================================
+% --- DOCUMENT START ---
+% ==================================================================
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{For Developers: The Testing Strategy}
+
+\subsection{Goal}
+The primary goal of this test plan is to verify that the bibliography processing tool achieves its desired outcome: producing a \textbf{trustworthy, complete, auditable, and high-fidelity "golden" bibliography}. This plan ensures that every component and workflow is rigorously tested to meet the project’s core principles of data integrity.
+
+\subsection{Testing Philosophy: A Layered Approach}
+To ensure comprehensive coverage, we use a layered testing strategy. Each layer serves a distinct purpose, providing a safety net that catches different types of errors.
+\begin{itemize}
+    \item \textbf{Unit Tests:} Fast, isolated tests to verify the internal logic of each individual class.
+    \item \textbf{Integration Tests:} Focused tests to verify that data flows correctly between the distinct phases of the workflow (i.e., the "plumbing" works).
+    \item \textbf{End-to-End (E2E) Tests:} Slower, comprehensive tests that run the entire application on realistic data to ensure the final output is correct.
+\end{itemize}
+This layered approach allows for rapid feedback during development (from unit tests) while guaranteeing the robustness of the complete system (from integration and E2E tests).
+
+\subsection{Test Environment and Helper Classes}
+A robust testing environment is crucial for efficiency and clarity. All test code resides in a dedicated \texttt{/tests} directory, separate from the application source code in \texttt{/src}. This environment is supported by a set of specialized helper classes designed to create test data and simulate external dependencies.
+
+\subsubsection{Helper Class Descriptions}
+These classes are the foundation of our test suite, allowing us to create clean, readable, and powerful tests.
+
+\begin{description}
+    \item[\texttt{BibTexTestDirectory}] \hfill \\
+    \textbf{Location:} \texttt{/tests/fixtures/directory\_manager.py} \\
+    \textbf{Purpose:} To programmatically create and clean up temporary directory structures for integration and E2E tests. \\
+    \textbf{Responsibilities:}
+    \begin{itemize}[leftmargin=*]
+        \item Create a temporary root directory for a single test run.
+        \item Provide methods to populate the directory with different types of files: well-formed \texttt{.bib} files, files with syntax errors, non-\texttt{.bib} files, etc.
+        \item Ensure automatic cleanup of the directory and its contents after a test completes, typically by implementing the context manager protocol (\texttt{\_\_enter\_\_} and \texttt{\_\_exit\_\_}).
+    \end{itemize}
+
+    \item[\texttt{MockCrossRefClient}] \hfill \\
+    \textbf{Location:} \texttt{/tests/mocks/api\_client.py} \\
+    \textbf{Purpose:} To simulate the real \texttt{CrossRefClient} for fast, offline unit and integration tests. \\
+    \textbf{Responsibilities:}
+    \begin{itemize}[leftmargin=*]
+        \item Implement the same public methods as the real client (e.g., \texttt{get\_work\_by\_doi}).
+        \item Be configurable to return specific, predefined responses based on the query it receives.
+        \item Track the calls made to it, so tests can assert that the correct queries were sent.
+    \end{itemize}
+
+    \item[\texttt{RecordBuilder}] \hfill \\
+    \textbf{Location:} \texttt{/tests/fixtures/record\_builder.py} \\
+    \textbf{Purpose:} To act as a factory for creating structured test data (e.g., Python dictionaries representing BibTeX records). \\
+    \textbf{Responsibilities:}
+    \begin{itemize}[leftmargin=*]
+        \item Provide a clean, fluent API for generating test records (e.g., \texttt{RecordBuilder().with\_title("...").build()}).
+        \item Include convenience methods for common scenarios, such as \texttt{create\_duplicate\_pair()} or \texttt{create\_suspect\_article()}.
+    \end{itemize}
+\end{description}
+
+\subsection{Test Suite Breakdown}
+\subsubsection{Unit Tests}
+\textbf{Goal:} Verify the correctness of each class’s internal logic in complete isolation. \\
+\textbf{How it meets the desired outcome:} Ensures the core algorithms for validation, reconciliation, and triage are correct by design, which is the foundation of a \textbf{trustworthy} system.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{lp{0.65\textwidth}}
+\toprule
+\textbf{Class to Test} & \textbf{Test Method Description} \\
+\midrule
+\texttt{Validator} &
+Using \texttt{MockCrossRefClient} and \texttt{RecordBuilder}, test that the \texttt{Validator} correctly adds new DOIs, confirms existing ones, replaces incorrect ones, and handles API failures gracefully. \\
+\addlinespace
+\texttt{Reconciler} &
+Using \texttt{RecordBuilder}, test that the \texttt{Reconciler} correctly deduplicates entries sharing a DOI, merges user-specific fields like \texttt{note} to demonstrate \textbf{fidelity}, and uses fuzzy matching for entries that lack a DOI. \\
+\addlinespace
+\texttt{Triage} &
+Using \texttt{RecordBuilder}, test that the \texttt{Triage} class correctly classifies an \texttt{@article} with a DOI as \texttt{Verified}, a \texttt{@book} without a DOI as \texttt{Accepted}, and a modern \texttt{@article} without a DOI as \texttt{Suspect}. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Integration Tests}
+\textbf{Goal:} Verify that the "plumbing" between the workflow phases is solid and that each phase can correctly process the file output from the previous one. \\
+\textbf{How it meets the desired outcome:} Guarantees the \textbf{auditability} and reproducibility of the workflow by confirming the integrity of the intermediate artifacts.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{lp{0.6\textwidth}}
+\toprule
+\textbf{Test Case} & \textbf{Actions} \\
+\midrule
+\texttt{Ingestor -> Validator} &
+Use \texttt{BibTexTestDirectory} to create a test directory and run the \texttt{Ingestor}. Assert that its output file is created. Then, feed this file to the \texttt{Validator} (using a mock API) and assert that its output file contains the correct validation statuses. \\
+\addlinespace
+\texttt{Validator -> Reconciler} &
+Create a pre-made validated JSON file containing known duplicates. Run the \texttt{Reconciler} on this file and assert that its output has the correct number of deduplicated entries and that user notes have been merged correctly. \\
+\addlinespace
+\texttt{Reconciler -> Triage \& Writer} &
+Create a pre-made reconciled JSON file with a mix of record types. Run the final \texttt{Triage} and \texttt{Writer} phases and assert that the final \texttt{.bib} output files are created and contain the correct entries. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{End-to-End (E2E) Tests}
+\textbf{Goal:} Verify that the entire application works as a cohesive whole on realistic data, from source files to final outputs. \\
+\textbf{How it meets the desired outcome:} Demonstrates that all principles are upheld in a complete run, ensuring a \textbf{complete} and \textbf{auditable} final product.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{lp{0.6\textwidth}}
+\toprule
+\textbf{Test Scenario} & \textbf{Actions} \\
+\midrule
+"Happy Path" Scenario &
+Use \texttt{BibTexTestDirectory} to create a directory with several well-formed \texttt{.bib} files. Run the full application pipeline and assert that the final output files are created correctly and the summary report is accurate. \\
+\addlinespace
+Pathological Scenario &
+Use \texttt{BibTexTestDirectory} to create a directory with a mix of broken, duplicate, and un-verifiable entries. Run the full pipeline and assert that the final output files correctly separate the valid and suspect entries, and that the summary report reflects the actions taken. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
