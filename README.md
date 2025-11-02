@@ -1,54 +1,48 @@
-[![CircleCI](https://circleci.com/gh/hrolfrc/bib-ami.svg?style=shield)](https://circleci.com/gh/hrolfrc/bib-ami)
-[![ReadTheDocs](https://readthedocs.org/projects/bib-ami/badge/?version=latest)](https://bib-ami.readthedocs.io/en/latest/)
-[![Codecov](https://codecov.io/gh/hrolfrc/bib-ami/branch/master/graph/badge.svg)](https://codecov.io/gh/hrolfrc/bib-ami)
-[![DOI](https://zenodo.org/badge/1012755631.svg)](https://doi.org/10.5281/zenodo.15795717)
+# qpfolio: Quadratic Programming Portfolio Optimizer
 
-# bib-ami: A Bibliography Integrity Manager
+[![CircleCI](https://circleci.com/gh/hrolfrc/qpfolio.svg?style=shield)](https://circleci.com/gh/hrolfrc/qpfolio)
+[![ReadTheDocs](https://readthedocs.org/projects/qpfolio/badge/?version=latest)](https://qpfolio.readthedocs.io/en/latest/)
+[![Codecov](https://codecov.io/gh/hrolfrc/qpfolio/branch/master/graph/badge.svg)](https://codecov.io/gh/hrolfrc/qpfolio)
 
-**bib-ami** is a smart command-line tool for cleaning, enriching, and managing the quality of your BibTeX bibliographies. It automates a rigorous data integrity workflow by consolidating `.bib` files, validating every entry against external APIs like CrossRef, and deduplicating records with confidence.
+**QPFolio** is a Python library for solving **quadratic programming (QP)** portfolio optimization problems using **[OR-Tools](https://developers.google.com/optimization)** and the **[OSQP](https://osqp.org/)** solver backend.  
+It provides an extensible API for constructing, solving,
+and visualizing portfolios based on modern convex optimization techniques.
 
-The tool intelligently scores the quality of each reference and triages them based on your own configurable rules, enabling researchers to build a clean, reliable, and auditable bibliography for their LaTeX, Zotero, or other reference management workflows.
+The library enables users to model and compare multiple optimization philosophies — such as **Markowitz Mean-Variance Optimization (MVO)**, **Most Diversified Portfolio (MDP)**, and **Distributionally Robust Optimization (DRO-lite)** — all solvable with standard QP methods.
+
+---
 
 ## Key Features
 
-  * **Merge & Consolidate:** Combines multiple `.bib` files from a directory into a single source.
-  * **Validate & Enrich:** Validates entries against CrossRef to find canonical DOIs, and automatically enriches records with missing data like full author lists, publication years, and ISBNs.
-  * **Active DOI Resolution:** Goes beyond just finding a DOI; `bib-ami` verifies that every DOI is active and resolvable via `doi.org`, protecting against stale or invalid identifiers.
-  * **Intelligent Deduplication:** Uses verified DOIs as the primary key for accurate deduplication, with a fuzzy-matching fallback for entries without a DOI.
-  * **Configurable Quality Gating:** Define your own standards for a "publishable" reference using a simple configuration file. Set quality thresholds (e.g., "Verified", "Confirmed") to automatically triage your entire library.
-  * **Centralized Configuration:** Use the `bib-ami config set` command to easily manage your default settings, like your email and quality rules, without ever touching a JSON file.
-  * **Detailed Audit Trail:** Provides transparent reporting on every action taken, with quality scores and changes noted directly in the output `.bib` files as comments.
+- **Markowitz Mean-Variance Optimization (MVO):**  
+  Find the efficient frontier by minimizing portfolio variance subject to a target return constraint.
+
+- **Most Diversified Portfolio (MDP):**  
+  Construct portfolios that maximize diversification ratio for improved stability and balanced risk exposure.
+
+- **Distributionally Robust Optimization (DRO-lite):**  
+  Account for uncertainty in return estimates by adding covariance-based robustness penalties — still fully solvable as a convex QP.
+
+- **Efficient Frontier Computation:**  
+  Generate the full risk-return trade-off curve and visualize it with one line of code.
+
+- **Risk & Performance Metrics:**  
+  Compute Sharpe ratios, diversification ratios, and risk contributions for all portfolios.
+
+- **Solver Abstraction Layer:**  
+  Use OR-Tools’ MathOpt interface (with OSQP backend) for robust and fast convex QP solving, or extend easily to CVXPY or Gurobi in future releases.
+
+- **Built-In Visualization:**  
+  Plot efficient frontiers, risk decomposition charts, and weight allocations directly via Matplotlib.
+
+---
 
 ## Getting Started
 
-### 1\. Installation
+### 1. Installation
 
-Ensure you have Python 3.7+ installed. You can install `bib-ami` using pip:
-
-```bash
-pip install bib-ami
-```
-
-### 2\. Quick Start
-
-To process a directory of `.bib` files, run the following command. You must provide an email address for responsible use of the CrossRef API.
+Ensure you have Python 3.9+ installed.  
+You can install **QPFolio** directly from PyPI:
 
 ```bash
-bib-ami --input-dir path/to/your/bibs --output-file cleaned.bib --email "your.email@example.com"
-```
-
-This will produce two files:
-
-  * `cleaned.bib`: Contains the entries that meet your quality standards.
-  * `cleaned.suspect.bib`: Contains entries that could not be verified and require manual review. This file is created automatically using a default name based on your main output file.
-
-## Configuration
-
-`bib-ami` is highly configurable. You can set personal defaults for your email and quality filtering rules so you don't have to type them every time. The easiest way to do this is with the `config` command:
-
-```bash
-bib-ami config set email "your.email@example.com"
-bib-ami config set triage_rules.min_quality_for_final_bib "Verified"
-```
-
-For a complete guide on all commands, configuration file locations, and available settings, please see the full **[Usage & Configuration documentation](https://www.google.com/search?q=https://bib-ami.readthedocs.io/en/latest/usage.html)**.
+pip install qpfolio
