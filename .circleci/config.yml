@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@3.3.0
-  codecov: codecov/codecov@5   # <-- added
+  codecov: codecov/codecov@5
 
 jobs:
   lint_and_test:
@@ -29,9 +29,9 @@ jobs:
               --cov-report=term-missing \
               --cov-report=xml:coverage.xml
       - codecov/upload:
-          file: coverage.xml       # <-- added
-          flags: unittests
-          verbose: true
+          files: "coverage.xml"
+          flags: "unittests"
+          fail_ci_if_error: true
       - run:
           name: Build wheel
           command: python -m build
