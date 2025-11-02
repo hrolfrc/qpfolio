@@ -34,6 +34,7 @@ dependencies = [
     "matplotlib>=3.7",
     "ortools>=9.10",
     "osqp>=0.6",
+    "scipy>=1.8"
 ]
 
 [project.optional-dependencies]
@@ -63,7 +64,6 @@ Homepage = "https://github.com/hrolfrc/qpfolio"
 Documentation = "https://qpfolio.readthedocs.io"
 Repository = "https://github.com/hrolfrc/qpfolio"
 Issues = "https://github.com/hrolfrc/qpfolio/issues"
-
 
 [tool.setuptools.packages.find]
 where = ["."]
