@@ -150,6 +150,8 @@ Project Information
    installation
    usage
    api_reference
+   visualization
+   reporting
    contributing
    changelog
    about

@@ -54,6 +54,9 @@ notebooks = [
     "jupyterlab",
     "notebook",
 ]
+reports = [
+    "jinja2>=3.1"
+]
 
 [project.urls]
 Homepage = "https://github.com/hrolfrc/qpfolio"
