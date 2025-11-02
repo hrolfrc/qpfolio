@@ -19,7 +19,7 @@ def test_frontier_mock_solver():
 def test_trc_sum():
     import numpy as np
     from qpfolio.core.metrics import risk_contributions
-    w = np.array([0.5, 0.5]);
+    w = np.array([0.5, 0.5])
     Sigma = np.array([[0.04, 0.0], [0.0, 0.09]])
     rc = risk_contributions(w, Sigma)
     var = float(w @ Sigma @ w)

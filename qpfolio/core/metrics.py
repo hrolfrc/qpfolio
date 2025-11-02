@@ -50,10 +50,17 @@ def turnover(w_old, w_new):
 
 
 def frontier_to_frame(points, asset_labels=None):
-    import pandas as pd, numpy as np
+    import pandas as pd  # local import to keep core deps light
+
     rows = []
     for i, (risk, ret, sol) in enumerate(points):
-        row = {"idx": i, "risk": risk, "return": ret, "obj": sol.obj_value, "status": sol.status}
+        row = {
+            "idx": i,
+            "risk": float(risk),
+            "return": float(ret),
+            "obj": float(sol.obj_value),
+            "status": sol.status,
+        }
         if asset_labels is None:
             for j, xj in enumerate(sol.x):
                 row[f"w_{j}"] = float(xj)
@@ -62,3 +69,4 @@ def frontier_to_frame(points, asset_labels=None):
                 row[f"w_{name}"] = float(xj)
         rows.append(row)
     return pd.DataFrame(rows).set_index("idx")
+
