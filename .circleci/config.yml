@@ -22,16 +22,17 @@ jobs:
             ruff --version
             ruff check .
       - run:
-          name: Run tests with coverage (XML + terminal)
+          name: Run tests (terminal + XML coverage)
           command: |
             pytest -v \
               --cov=qpfolio \
               --cov-report=term-missing \
               --cov-report=xml:coverage.xml
-      - codecov/upload:
-          files: "coverage.xml"
-          flags: "unittests"
-          fail_ci_if_error: true
+      # Optional: keep the XML as a CircleCI artifact too
+      - store_artifacts:
+          path: coverage.xml
+      # Codecov orb v5 auto-detects coverage files at repo root; no extra params needed
+      - codecov/upload
       - run:
           name: Build wheel
           command: python -m build
