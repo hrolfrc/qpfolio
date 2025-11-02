@@ -1,0 +1,109 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\title{Mathematical Formulations of Portfolio Optimization Methods using Quadratic Optimization}
+\author{AI Assistant}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document outlines the mathematical formulations for three prominent portfolio optimization methods: Markowitz Mean-Variance Optimization (MVO), the Most Diversified Portfolio (MDP), and select Distributionally Robust Optimization (DRO) approaches. A central theme among these methods is their ability to leverage efficient quadratic programming (QP) solvers for practical implementation.
+\end{abstract}
+
+\section{Introduction to Quadratic Programming in Finance}
+Quadratic programming (QP) is a form of mathematical optimization where the objective function is quadratic and the constraints are linear. This structure is highly beneficial in finance because many risk measures, such as variance, are inherently quadratic functions of portfolio weights. This allows for efficient and robust solutions using standard QP solvers.
+
+\section{Markowitz Mean-Variance Optimization (MVO)}
+The MVO framework is the cornerstone of modern portfolio theory. The objective is typically to minimize portfolio variance for a given expected return target.
+
+\textbf{Inputs:}
+\begin{itemize}
+    \item $N$: Number of assets.
+    \item $\mathbf{w} \in \mathbb{R}^N$: Vector of portfolio weights ($\sum w_i = 1$).
+    \item $\boldsymbol{\mu} \in \mathbb{R}^N$: Vector of expected returns.
+    \item $\boldsymbol{\Sigma} \in \mathbb{R}^{N \times N}$: Covariance matrix of asset returns (assumed to be positive semi-definite).
+\end{itemize}
+
+\textbf{Portfolio Variance and Expected Return:}
+$$
+\text{Variance } (\sigma_p^2) = \mathbf{w}^T \boldsymbol{\Sigma} \mathbf{w}
+$$
+$$
+\text{Expected Return } (\mu_p) = \mathbf{w}^T \boldsymbol{\mu}
+$$
+
+\textbf{Optimization Problem (QP Formulation):}
+The problem is formulated as minimizing variance subject to achieving a target return $R_{target}$ and satisfying the budget constraint.
+
+$$
+\begin{aligned}
+\min_{\mathbf{w}} \quad & \frac{1}{2} \mathbf{w}^T \boldsymbol{\Sigma} \mathbf{w} \\
+\text{s.t.} \quad & \mathbf{w}^T \boldsymbol{\mu} \geq R_{target} \\
+& \mathbf{w}^T \mathbf{1} = 1 \\
+& \mathbf{w} \geq \mathbf{0} \quad (\text{optional, for long-only portfolios})
+\end{aligned}
+$$
+This is a standard convex QP problem solvable by well-established algorithms.
+
+\section{Most Diversified Portfolio (MDP)}
+The MDP strategy aims to maximize the diversification ratio (DR). Although the initial objective function is non-linear (a ratio of linear and square root terms), the problem can be transformed into an equivalent QP problem.
+
+\textbf{Inputs:}
+\begin{itemize}
+    \item $\sigma_i$: Volatility (standard deviation) of asset $i$.
+    \item $\boldsymbol{\sigma} \in \mathbb{R}^N$: Vector of asset volatilities.
+\end{itemize}
+
+\textbf{Diversification Ratio:}
+$$
+DR(\mathbf{w}) = \frac{\sum_{i=1}^N w_i \sigma_i}{\sqrt{\mathbf{w}^T \boldsymbol{\Sigma} \mathbf{w}}} = \frac{\mathbf{w}^T \boldsymbol{\sigma}}{\sigma_P}
+$$
+
+\textbf{Optimization Problem (QP Formulation):}
+Maximizing the DR is equivalent to minimizing the portfolio variance subject to a normalization constraint on the sum of weighted volatilities.
+
+$$
+\begin{aligned}
+\min_{\mathbf{w}} \quad & \frac{1}{2} \mathbf{w}^T \boldsymbol{\Sigma} \mathbf{w} \\
+\text{s.t.} \quad & \mathbf{w}^T \boldsymbol{\sigma} = 1 \\
+& \mathbf{w}^T \mathbf{1} = 1 \\
+& \mathbf{w} \geq \mathbf{0} \quad (\text{optional})
+\end{aligned}
+$$
+The resulting weights are then typically re-scaled to sum to one (if not already handled by the budget constraint above).
+
+\section{Distributionally Robust Optimization (DRO)}
+DRO methods address the uncertainty in the true return distribution by optimizing for the worst-case scenario over a set of possible distributions $\mathcal{P}$, called the ambiguity set.
+
+**Worst-Case Optimization:**
+$$
+\min_{\mathbf{w}} \quad \sup_{P \in \mathcal{P}} \mathbb{E}_{P}[\text{Risk}(\mathbf{w}, R)]
+$$
+where $\sup_{P \in \mathcal{P}}$ denotes the supremum (worst-case value) over all probability measures $P$ within the ambiguity set $\mathcal{P}$.
+
+**Quadratic Optimization Connection:**
+When the ambiguity set $\mathcal{P}$ is defined using moment information (e.g., the mean and covariance lie within a certain confidence region), the robust optimization problem can often be reformulated as an equivalent, single-stage, deterministic **convex quadratic programming** problem.
+
+For example, a robust MVO formulation may introduce a penalty term to the variance objective that accounts for model uncertainty:
+
+$$
+\begin{aligned}
+\min_{\mathbf{w}} \quad & \frac{1}{2} \mathbf{w}^T (\boldsymbol{\Sigma} + \boldsymbol{\Gamma}) \mathbf{w} \\
+\text{s.t.} \quad & \mathbf{w}^T \boldsymbol{\mu} \geq R_{target} \\
+& \mathbf{w}^T \mathbf{1} = 1 \\
+\end{aligned}
+$$
+Here, $\boldsymbol{\Gamma}$ is an uncertainty penalty matrix derived from the structure of the ambiguity set $\mathcal{P}$. This transformed problem remains a standard QP problem, solvable with the same efficient methods as the standard MVO.
+
+\section{Conclusion}
+Markowitz MVO, MDP, and specific formulations of DRO demonstrate that portfolio optimization problems across various risk philosophies often rely on the same fundamental mathematical engine: **quadratic programming**. This reliance highlights the efficiency and tractability of QP solvers in modern finance.
+
+\end{document}

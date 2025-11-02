@@ -1,97 +1,33 @@
 version: 2.1
 
-# ------------------------------------------------------------------------------
-# ORBS: Reusable packages of CircleCI configuration.
-# ------------------------------------------------------------------------------
 orbs:
-  python: circleci/python@2.1.1
-  codecov: codecov/codecov@5
+  python: circleci/python@3.3.0
 
-# ------------------------------------------------------------------------------
-# JOBS: Defines the individual tasks to be executed.
-# ------------------------------------------------------------------------------
 jobs:
-  unit-test:
-    docker:
-      - image: cimg/python:3.11  # Matches local Python 3.11.13
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          name: Verify critical files
-          command: |
-            ls -l README.md pyproject.toml bib_ami/__main__.py || exit 1
-      - python/install-packages:
-          pkg-manager: pip
-          args: >
-            pytest pytest-cov pytest-mock bibtexparser requests fuzzywuzzy python-Levenshtein
-      - run:
-          name: Run unit tests
-          command: |
-            python -m pytest tests/unit/ -v --cov=bib_ami --cov-report=xml
-      - store_artifacts:
-          path: coverage.xml
-      - codecov/upload:
-          token: CODECOV_TOKEN
-
-  integration-test:
+  lint_and_test:
     docker:
       - image: cimg/python:3.11
-    working_directory: ~/repo
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
-          args: >
-            pytest pytest-cov pytest-mock bibtexparser requests fuzzywuzzy python-Levenshtein
       - run:
-          name: Run E2E tests
+          name: Upgrade pip
+          command: python -m pip install --upgrade pip
+      - run:
+          name: Install package with dev extras
+          command: pip install -e ".[dev]"
+      - run:
+          name: Run linters
           command: |
-            python -m pytest tests/e2e/ -v --log-file=integration.log
-      - store_artifacts:
-          path: integration.log
+            ruff --version
+            ruff check .
+      - run:
+          name: Run tests
+          command: pytest -v --cov=qpfolio --cov-report=term-missing
+      - run:
+          name: Build wheel
+          command: python -m build
 
-  deploy:
-    docker:
-      - image: cimg/python:3.11
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - python/install-packages:
-          pkg-manager: pip
-          args: >
-            twine sphinx sphinx_rtd_theme build
-      - run:
-          name: Build documentation
-          command: |
-            cd doc
-            make html
-            cd ..
-      - run:
-          name: Build distribution packages
-          command: |
-            python3 -m build
-      - run:
-          name: Upload to PyPI
-          command: |
-            python3 -m twine upload dist/* --verbose
-      - store_artifacts:
-          path: doc/_build/html/
-          destination: doc
-
-# ------------------------------------------------------------------------------
-# WORKFLOWS: Defines the sequence of jobs to be run.
-# ------------------------------------------------------------------------------
 workflows:
-  build-and-deploy:
+  build_and_test:
     jobs:
-      - unit-test
-      - integration-test:
-          requires:
-            - unit-test
-      - deploy:
-          context:
-            - twine
-            - codecov
-          requires:
-            - integration-test
+      - lint_and_test

@@ -1,25 +1,25 @@
-# Configuration file for the Sphinx documentation builder.
+import os
+import sys
+from datetime import datetime
 
-project = 'bib-ami'
 # noinspection PyShadowingBuiltins
-copyright = '2025, Rolf Carlson'
-author = 'Rolf Carlson'
-release = '0.16.0'
+project = "qpfolio"
+author = "Rolf Carlson"
+copyright = f"{datetime.now():%Y}, {author}"
+release = "0.1.0a0"
 
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+sys.path.insert(0, os.path.abspath(".."))
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
-# Extensions
 extensions = [
-    'sphinx.ext.autodoc',
+    "sphinx.ext.autodoc",
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',  # For Google-style docstrings
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
 ]
 
-# Theme
-html_theme = 'sphinx_rtd_theme'
+html_theme = "furo"
+templates_path = ["_templates"]
 html_static_path = ['_static']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+autodoc_default_options = {"members": True, "undoc-members": True}
