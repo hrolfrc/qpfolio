@@ -119,3 +119,15 @@ Next Steps
 ----------
 
 Explore the :doc:`api_reference` for detailed class and function documentation.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: User Guide
+
+   methods
+   data_generation
+   visualization
+   comparison
+   example_portfolio_workflow
+   api_reference
+

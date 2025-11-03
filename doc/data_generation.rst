@@ -1,0 +1,40 @@
+Data Generation
+===============
+
+Synthetic Returns (Multivariate Normal)
+---------------------------------------
+We often assume returns are multivariate normal (MVN). With :math:`N` assets:
+
+- Draw :math:`R_t \sim \mathcal{N}(\mu, \Sigma)` i.i.d. for :math:`t = 1,\dots,T`.
+- Estimate :math:`\hat{\mu}` and :math:`\hat{\Sigma}` from samples (see :mod:`qpfolio.core.estimates`).
+
+Geometric Brownian Motion (GBM) for Prices
+------------------------------------------
+For asset :math:`i`,
+
+.. math::
+   S_i(t) = S_i(0)\,\exp\!\big((\mu_i - 0.5\,\sigma_i^2)\,t + \sigma_i W_i(t)\big).
+
+Use :mod:`qpfolio.simulation.gbm`:
+
+.. code-block:: python
+
+   from qpfolio.simulation.gbm import simulate_prices_and_returns
+   prices, log_ret = simulate_prices_and_returns(
+       mus=[0.08, 0.10, 0.12],
+       sigmas=[0.20, 0.25, 0.30],
+       T=1.0,
+       steps_per_year=252,
+       s0=[100, 120, 80],
+       seed=42,
+   )
+
+   # Sample estimates for optimization
+   import numpy as np
+   mu_hat = np.asarray(log_ret.mean() * 252, dtype=float)
+   Sigma_hat = np.asarray(log_ret.cov() * 252, dtype=float)
+
+Choosing a Generator
+--------------------
+- **MVN returns**: simplest pipeline for MVO/MDP/DRO demos.
+- **GBM prices**: needed when you want realistic price paths and then compute returns.
