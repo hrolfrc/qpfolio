@@ -9,6 +9,16 @@ Efficient Frontier (Real)
    :align: center
    :width: 720px
 
+.. image:: _static/artifacts/v2/dro_frontier.png
+   :alt: DRO frontier (Σ + γI)
+   :width: 70%
+   :align: center
+
+.. image:: _static/artifacts/v2/mdp_point.png
+   :alt: MDP point (closed-form)
+   :width: 50%
+   :align: center
+
 Efficient Frontier + Capital Market Line
 ----------------------------------------
 

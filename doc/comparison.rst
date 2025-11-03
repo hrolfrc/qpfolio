@@ -34,6 +34,22 @@ Example Figures
    :align: center
 
 
+.. image:: _static/artifacts/v2/comparison_frontiers.png
+   :alt: MVO vs DRO frontiers with MDP point
+   :width: 85%
+   :align: center
+
+.. image:: _static/artifacts/v2/dro_frontier.png
+   :alt: DRO frontier (Σ + γ I)
+   :width: 70%
+   :align: center
+
+.. image:: _static/artifacts/v2/mdp_point.png
+   :alt: Most Diversified Portfolio (point)
+   :width: 55%
+   :align: center
+
+
 Key Takeaways
 -------------
 - **MVO** achieves the best frontier under precise estimates but is brittle.

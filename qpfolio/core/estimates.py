@@ -14,41 +14,33 @@ def sample_mean_cov(
     Estimate sample mean vector and covariance matrix for asset returns.
 
     Parameters
-    ----------
-    x : np.ndarray
-        2D array of shape (T, N) containing return observations.
-        Each row is a time step; each column is an asset.
-    freq : int, default=1
-        Frequency multiplier for annualization or scaling.
-        For example:
-          - `freq=252` for daily returns → annualized
-          - `freq=12`  for monthly returns → annualized
-          - `freq=1`   leaves values unscaled
-    ddof : int, default=1
-        Delta degrees of freedom for covariance (see numpy.cov).
+    ~~~~~~~~~~
+    - **x** (ndarray, shape (T, N)): Return observations. Rows = time, columns = assets.
+    - **freq** (int, default 1): Scaling factor (e.g., 252 for daily→annualized).
+    - **ddof** (int, default 1): Degrees of freedom for covariance (passed to ``numpy.cov``).
 
     Returns
-    -------
-    mu : np.ndarray
-        Mean vector (shape (N,)) — scaled by `freq` if specified.
-    Sigma : np.ndarray
-        Covariance matrix (shape (N, N)) — scaled by `freq` if specified.
+    ~~~~~~~
+    - **mu** (ndarray, shape (N,)): Mean vector scaled by ``freq``.
+    - **Sigma** (ndarray, shape (N, N)): Covariance matrix scaled by ``freq``.
 
     Notes
-    -----
-    - Annualization assumes independence of returns over periods.
-    - Scaling both mean and covariance by `freq` is standard
-      for small daily or monthly compounding intervals.
+    ~~~~~
+    Annualization assumes returns are independent across periods. Scaling both mean
+    and covariance by ``freq`` is the standard convention for small compounding intervals.
 
     Examples
     --------
-    >>> import numpy as np
-    >>> rng = np.random.default_rng(0)
-    >>> x = rng.normal(0.001, 0.01, size=(252, 3))
-    >>> mu, Sigma = sample_mean_cov(x, freq=252)
-    >>> mu.shape, Sigma.shape
-    ((3,), (3, 3))
+    .. code-block:: python
+
+       >>> import numpy as np
+       >>> rng = np.random.default_rng(0)
+       >>> x = rng.normal(0.001, 0.01, size=(252, 3))
+       >>> mu, Sigma = sample_mean_cov(x, freq=252)
+       >>> mu.shape, Sigma.shape
+       ((3,), (3, 3))
     """
+
     if x.ndim != 2:
         raise ValueError(f"Expected 2D array, got shape {x.shape}")
 

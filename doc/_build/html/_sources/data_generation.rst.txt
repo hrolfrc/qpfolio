@@ -38,3 +38,14 @@ Choosing a Generator
 --------------------
 - **MVN returns**: simplest pipeline for MVO/MDP/DRO demos.
 - **GBM prices**: needed when you want realistic price paths and then compute returns.
+
+.. image:: _static/artifacts/v1/gbm_prices.png
+   :alt: GBM price paths
+   :width: 90%
+   :align: center
+
+.. image:: _static/artifacts/v1/gbm_returns.png
+   :alt: GBM log returns (annualized)
+   :width: 90%
+   :align: center
+

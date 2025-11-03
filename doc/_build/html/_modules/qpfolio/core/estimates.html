@@ -192,8 +192,19 @@
   <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to Quadratic Portfolio Optimization</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data_generation.html">Data Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../comparison.html">Method Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reporting.html">Reporting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../about.html">About QPFolio</a></li>
@@ -231,16 +242,63 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for qpfolio.core.estimates</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
 
 
 <div class="viewcode-block" id="sample_mean_cov">
 <a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.estimates.sample_mean_cov">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">sample_mean_cov</span><span class="p">(</span><span class="n">returns</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute sample mean and covariance from returns matrix (T, N).&quot;&quot;&quot;</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="n">returns</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">252.0</span>
-    <span class="n">Sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">*</span> <span class="mf">252.0</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_mean_cov</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">freq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">ddof</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate sample mean vector and covariance matrix for asset returns.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ~~~~~~~~~~</span>
+<span class="sd">    - **x** (ndarray, shape (T, N)): Return observations. Rows = time, columns = assets.</span>
+<span class="sd">    - **freq** (int, default 1): Scaling factor (e.g., 252 for daily→annualized).</span>
+<span class="sd">    - **ddof** (int, default 1): Degrees of freedom for covariance (passed to ``numpy.cov``).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ~~~~~~~</span>
+<span class="sd">    - **mu** (ndarray, shape (N,)): Mean vector scaled by ``freq``.</span>
+<span class="sd">    - **Sigma** (ndarray, shape (N, N)): Covariance matrix scaled by ``freq``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ~~~~~</span>
+<span class="sd">    Annualization assumes returns are independent across periods. Scaling both mean</span>
+<span class="sd">    and covariance by ``freq`` is the standard convention for small compounding intervals.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">       &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">       &gt;&gt;&gt; rng = np.random.default_rng(0)</span>
+<span class="sd">       &gt;&gt;&gt; x = rng.normal(0.001, 0.01, size=(252, 3))</span>
+<span class="sd">       &gt;&gt;&gt; mu, Sigma = sample_mean_cov(x, freq=252)</span>
+<span class="sd">       &gt;&gt;&gt; mu.shape, Sigma.shape</span>
+<span class="sd">       ((3,), (3, 3))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected 2D array, got shape </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Mean vector</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Sample covariance (rowvar=False → columns are variables)</span>
+    <span class="n">Sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">)</span>
+
+    <span class="c1"># Scale (annualization)</span>
+    <span class="n">mu</span> <span class="o">*=</span> <span class="n">freq</span>
+    <span class="n">Sigma</span> <span class="o">*=</span> <span class="n">freq</span>
+
     <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span></div>
 
 </pre></div>

@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2025-11-03T04:37:15+00:00",
+  "generated_at_utc": "2025-11-03T05:38:24+00:00",
   "seed": 42,
   "config": {
     "n_assets": 5,
@@ -73,6 +73,7 @@
     "dro_frontier.csv",
     "dro_frontier.png",
     "mdp_point.png",
+    "metadata.json",
     "mvo_frontier.csv",
     "mvo_frontier.png",
     "mvo_risk.png",
