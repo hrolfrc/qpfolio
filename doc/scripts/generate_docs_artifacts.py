@@ -7,26 +7,18 @@ Generate documentation artifacts (plots + CSV) with REAL qpfolio runs.
 """
 from __future__ import annotations
 
-from pathlib import Path
-import sys
-
-# repo_root = .../qpfolio
-repo_root = Path(__file__).resolve().parents[2]
-if str(repo_root) not in sys.path:
-    sys.path.insert(0, str(repo_root))
-
-
 import json
 from datetime import datetime, UTC
+from pathlib import Path
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 from qpfolio.core.data import simulate_mvn_returns
 from qpfolio.core.estimates import sample_mean_cov
 from qpfolio.core.frontier import compute_frontier
-from qpfolio.core.metrics import risk_contributions
 from qpfolio.core.metrics import frontier_to_frame
+from qpfolio.core.metrics import risk_contributions
 from qpfolio.solvers.mathopt_osqp import MathOptOSQP  # ensure this is the real adapter
 
 OUTDIR = Path("_static/artifacts/v0")

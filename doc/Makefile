@@ -182,12 +182,3 @@ pseudoxml:
 	$(SPHINXBUILD) -b pseudoxml $(ALLSPHINXOPTS) $(BUILDDIR)/pseudoxml
 	@echo
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
-
-# At the very top (or near SPHINXBUILD)
-PYTHON ?= python3
-
-.PHONY: docs-artifacts
-docs-artifacts:
-	@echo "Generating qpfolio doc artifacts..."
-	# Run from the repository root so imports and paths work
-	cd .. && $(PYTHON) doc/scripts/generate_docs_artifacts.py
