@@ -194,22 +194,26 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Quadratic Portfolio Optimization</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="usage.html">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="philosophy_and_goals.html">Philosophy and Goals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="usage.html#id1">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="data_generation.html">Data Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Method Comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="applications/personal_and_direct_indexing.html">Personal Indexing and Direct Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="personal_indexing.html">Personal Indexing (Tracking Error, ESG, and Tax-Aware)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reporting.html">Reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_personal_indexing.html">Personal Indexing API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About QPFolio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="philosophy_and_goals.html">Philosophy and Goals</a></li>
 </ul>
 
 </div>
@@ -376,7 +380,28 @@ Plot efficient frontiers, allocation breakdowns, and risk contributions via Matp
 <li class="toctree-l2"><a class="reference internal" href="introduction.html#where-to-next">Where to Next</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="philosophy_and_goals.html">Philosophy and Goals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="philosophy_and_goals.html#core-philosophy">Core Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="philosophy_and_goals.html#project-goals">Project Goals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="philosophy_and_goals.html#guiding-motto">Guiding Motto</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#layered-design">Layered Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#advantages-of-the-architecture">Advantages of the Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#relation-to-the-documentation">Relation to the Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#meanvariance-optimization-mvo">Mean–Variance Optimization (MVO)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#most-diversified-portfolio-mdp">Most Diversified Portfolio (MDP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#distributionally-robust-optimization-dro-moment-based">Distributionally Robust Optimization (DRO, moment-based)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#method-selection-strengths-weaknesses">Method Selection: Strengths &amp; Weaknesses</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#id1">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#quick-start">Quick Start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#interpreting-results">Interpreting Results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#alternative-models">Alternative Models</a></li>
@@ -384,11 +409,24 @@ Plot efficient frontiers, allocation breakdowns, and risk contributions via Matp
 <li class="toctree-l2"><a class="reference internal" href="usage.html#next-steps">Next Steps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.core.data">Core Modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.solvers.base">Solver Interfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.core.types">Data Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#developer-notes">Developer Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="applications/personal_and_direct_indexing.html">Personal Indexing and Direct Indexing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="applications/personal_and_direct_indexing.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications/personal_and_direct_indexing.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications/personal_and_direct_indexing.html#two-complementary-perspectives">Two Complementary Perspectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications/personal_and_direct_indexing.html#similarities-and-differences">Similarities and Differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications/personal_and_direct_indexing.html#canonical-optimization-problems">Canonical Optimization Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications/personal_and_direct_indexing.html#how-qpfolio-supports-these-problems">How qpfolio Supports These Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications/personal_and_direct_indexing.html#example-scenarios">Example Scenarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="applications/personal_and_direct_indexing.html#discussion-and-outlook">Discussion and Outlook</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="personal_indexing.html">Personal Indexing (Tracking Error, ESG, and Tax-Aware)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="personal_indexing.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="personal_indexing.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="personal_indexing.html#basic-tracking-error">Basic Tracking Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="personal_indexing.html#esg-penalty-example">ESG Penalty Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="personal_indexing.html#tax-turnover-aware-example">Tax/Turnover-Aware Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="personal_indexing.html#run-the-example-scripts">Run the Example Scripts</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a><ul>
@@ -404,6 +442,19 @@ Plot efficient frontiers, allocation breakdowns, and risk contributions via Matp
 <li class="toctree-l1"><a class="reference internal" href="reporting.html">Reporting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reporting.html#artifacts">Artifacts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reporting.html#html-summary-optional">HTML Summary (optional)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.core.data">Core Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.solvers.base">Solver Interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.core.types">Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_reference.html#developer-notes">Developer Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_personal_indexing.html">Personal Indexing API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_personal_indexing.html#qpfolio.personal_indexing.personal_index_optimizer"><code class="docutils literal notranslate"><span class="pre">personal_index_optimizer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_personal_indexing.html#qpfolio.personal_indexing.personal_index_optimizer_esg"><code class="docutils literal notranslate"><span class="pre">personal_index_optimizer_esg()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_personal_indexing.html#qpfolio.personal_indexing.personal_index_optimizer_taxaware"><code class="docutils literal notranslate"><span class="pre">personal_index_optimizer_taxaware()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
@@ -429,12 +480,6 @@ Plot efficient frontiers, allocation breakdowns, and risk contributions via Matp
 <li class="toctree-l2"><a class="reference internal" href="about.html#acknowledgments">Acknowledgments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="about.html#citation">Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="about.html#summary">Summary</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="philosophy_and_goals.html">Philosophy and Goals</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="philosophy_and_goals.html#core-philosophy">Core Philosophy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="philosophy_and_goals.html#project-goals">Project Goals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="philosophy_and_goals.html#guiding-motto">Guiding Motto</a></li>
 </ul>
 </li>
 </ul>
@@ -508,7 +553,7 @@ Plot efficient frontiers, allocation breakdowns, and risk contributions via Matp
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=ca7ad2ea"></script>
+</div><script src="_static/documentation_options.js?v=22607128"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

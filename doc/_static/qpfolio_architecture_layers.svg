@@ -1,0 +1,80 @@
+<svg width="960" height="420" viewBox="0 0 960 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">QPfolio Three-Layer Architecture</title>
+  <desc id="desc">Three horizontally stacked boxes connected by center-to-center arrows: Core Optimization Engine → Portfolio Optimization Methods → Applications.</desc>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="960" height="420" fill="#ffffff" />
+
+  <!-- Header -->
+  <text x="480" y="40" text-anchor="middle" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="22" font-weight="700" fill="#222222">
+    QPfolio Architecture
+  </text>
+  <text x="480" y="66" text-anchor="middle" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="14" fill="#555555">
+    Composable layers: Core Engine → Methods → Applications
+  </text>
+
+  <!-- Layer 1: Core Optimization Engine -->
+  <g transform="translate(60, 160)">
+    <rect x="0" y="0" rx="16" ry="16" width="240" height="110" fill="#eef4ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="120" y="28" text-anchor="middle" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="16" font-weight="700" fill="#1f3b8f">
+      Core Optimization Engine
+    </text>
+    <text x="10" y="58" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="13" fill="#1f3b8f">
+      • ProblemSpec
+    </text>
+    <text x="10" y="78" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="13" fill="#1f3b8f">
+      • MathOptOSQP
+    </text>
+  </g>
+
+  <!-- Layer 2: Portfolio Optimization Methods -->
+  <g transform="translate(360, 160)">
+    <rect x="0" y="0" rx="16" ry="16" width="240" height="110" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+    <text x="120" y="28" text-anchor="middle" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="16" font-weight="700" fill="#065f46">
+      Portfolio Optimization Methods
+    </text>
+    <text x="10" y="58" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="13" fill="#065f46">
+      • MVO, MDP, DRO
+    </text>
+    <text x="10" y="78" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="13" fill="#065f46">
+      • Converts theory → QP form
+    </text>
+  </g>
+
+  <!-- Layer 3: Applications -->
+  <g transform="translate(660, 160)">
+    <rect x="0" y="0" rx="16" ry="16" width="240" height="110" fill="#fff7ed" stroke="#f59e0b" stroke-width="2"/>
+    <text x="120" y="28" text-anchor="middle" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="16" font-weight="700" fill="#7c3e06">
+      Applications
+    </text>
+    <text x="10" y="58" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="13" fill="#7c3e06">
+      • Personal Indexing
+    </text>
+    <text x="10" y="78" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="13" fill="#7c3e06">
+      • ESG / Tax-Aware / Frontier
+    </text>
+  </g>
+
+  <!-- Arrows left-to-right -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <!-- Between Core Engine and Methods -->
+  <line x1="300" y1="215" x2="360" y2="215" stroke="#6b7280" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- Between Methods and Applications -->
+  <line x1="600" y1="215" x2="660" y2="215" stroke="#6b7280" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Legend -->
+  <g transform="translate(620, 340)">
+    <rect x="0" y="0" rx="8" ry="8" width="280" height="44" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="12" y="18" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="12" fill="#374151">
+      Composition direction: Core Engine → Methods → Applications
+    </text>
+    <text x="12" y="34" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="12" fill="#374151">
+      Swap solvers or methods independently.
+    </text>
+  </g>
+</svg>

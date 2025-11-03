@@ -1,174 +1,262 @@
+# qpfolio/solvers/mathopt_osqp.py
 from __future__ import annotations
 
-from typing import Any, Optional, Sequence, Tuple
-
+from dataclasses import dataclass
+from typing import Optional, Sequence, Tuple
 import numpy as np
-import osqp
+
+try:
+    import osqp  # type: ignore
+except Exception:  # pragma: no cover
+    osqp = None
+
 import scipy.sparse as sp
 
-from qpfolio.core.types import ProblemSpec, Solution
-from qpfolio.solvers.base import Solver
+from qpfolio.core.types import ProblemSpec, Solution, Array
 
 
-# noinspection PyCompatibility
-def _stack_osqp_system(
-        Q: np.ndarray,
-        c: Optional[np.ndarray],
-        A_eq: Optional[np.ndarray],
-        b_eq: Optional[np.ndarray],
-        A_ineq: Optional[np.ndarray],
-        b_ineq: Optional[np.ndarray],
-        bounds: Optional[Sequence[Tuple[float, float]]],
-) -> tuple[sp.csc_matrix, np.ndarray, sp.csc_matrix, np.ndarray, np.ndarray]:
+# ---------- Helpers ----------
+
+def _osqp_info_to_dict(info_ns) -> dict:
     """
-    Build OSQP matrices (P, q, A, lower, upper) for the problem:
+    Convert OSQP info (often a SimpleNamespace) to a plain dict, tolerating
+    version differences in field names.
+    """
+    base = {}
+    try:
+        base.update(vars(info_ns))
+    except Exception:
+        pass
 
-        minimize   (1/2) x^T Q x + c^T x
-        subject to A_eq x = b_eq
-                   A_ineq x <= b_ineq
-                   bounds[i][0] <= x_i <= bounds[i][1]
+    # Normalize common residual fields if missing on this OSQP version
+    if "pri_res" not in base:
+        base["pri_res"] = getattr(info_ns, "pri_res", getattr(info_ns, "pri_res_norm", None))
+    if "dua_res" not in base:
+        base["dua_res"] = getattr(info_ns, "dua_res", getattr(info_ns, "dua_res_norm", None))
 
-    Returns
-    -------
-    P : csc_matrix
-    q : ndarray
-    A : csc_matrix
-    lower : ndarray
-    upper : ndarray
+    # Common extras (populate if present, otherwise None)
+    for k in ("iter", "status_val", "setup_time", "solve_time", "rho"):
+        if k not in base:
+            base[k] = getattr(info_ns, k, None)
+
+    return base
+
+
+def _bounds_to_triplet(n: int, bounds: Optional[Sequence[Tuple[Optional[float], Optional[float]]]]):
+    """
+    Convert variable bounds into an OSQP-style triplet (A_b, l_b, u_b),
+    where A_b = I (n x n), l_b[i] <= x_i <= u_b[i].
+    None maps to +/- inf appropriately.
+    """
+    if bounds is None:
+        return None, None, None
+
+    I = np.eye(n)
+    l = np.empty(n, dtype=float)
+    u = np.empty(n, dtype=float)
+
+    for i, bh in enumerate(bounds):
+        if bh is None:
+            lo, hi = None, None
+        else:
+            lo, hi = bh
+        l[i] = -np.inf if lo is None else float(lo)
+        u[i] =  np.inf if hi is None else float(hi)
+
+    return I, l, u
+
+
+def _stack_osqp_system(
+    *,
+    Q: Array,
+    c: Array,
+    A_eq: Optional[Array],
+    b_eq: Optional[Array],
+    A_ineq: Optional[Array],
+    b_ineq: Optional[Array],
+    bounds: Optional[Sequence[Tuple[Optional[float], Optional[float]]]],
+):
+    """
+    Build OSQP system P, q, A, l, u from legacy (A_eq, b_eq, A_ineq, b_ineq, bounds).
+
+    Returns:
+        P (n,n)  : quadratic matrix (symmetrized)
+        q (n,)   : linear vector
+        A (m,n)  : constraint matrix
+        l (m,)   : lower bounds
+        u (m,)   : upper bounds
     """
     n = Q.shape[0]
+    blocks_A = []
+    blocks_l = []
+    blocks_u = []
 
-    # Symmetrize Q and add a tiny ridge if necessary for numerical stability
-    P = 0.5 * (Q + Q.T)
-    ev_min = np.linalg.eigvalsh(P).min()
-    if ev_min < 1e-10:
-        P = P + (1e-8 - min(ev_min, 0.0)) * np.eye(n)
-
-    q = np.zeros(n, dtype=float) if c is None else c.astype(float, copy=False)
-
-    A_blocks: list[np.ndarray] = []
-    lower_blocks: list[np.ndarray] = []
-    upper_blocks: list[np.ndarray] = []
-
-    # Equality constraints: A_eq x = b_eq  -> lower == upper == b_eq
+    # Equality constraints: A_eq x = b_eq  -> b_eq <= A_eq x <= b_eq
     if A_eq is not None and b_eq is not None:
-        A_blocks.append(A_eq)
-        b_eqf = b_eq.astype(float, copy=False)
-        lower_blocks.append(b_eqf)
-        upper_blocks.append(b_eqf)
+        blocks_A.append(A_eq)
+        blocks_l.append(b_eq.astype(float, copy=False))
+        blocks_u.append(b_eq.astype(float, copy=False))
 
-    # Inequality constraints: A_ineq x <= b_ineq  ->  -inf <= A_ineq x <= b_ineq
+    # Inequality constraints: A_ineq x <= b_ineq -> -inf <= A_ineq x <= b_ineq
     if A_ineq is not None and b_ineq is not None:
-        m_ineq = A_ineq.shape[0]
-        A_blocks.append(A_ineq)
-        lower_blocks.append(np.full(m_ineq, -np.inf, dtype=float))
-        upper_blocks.append(b_ineq.astype(float, copy=False))
+        blocks_A.append(A_ineq)
+        blocks_l.append(-np.inf * np.ones_like(b_ineq, dtype=float))
+        blocks_u.append(b_ineq.astype(float, copy=False))
 
-    # Variable bounds: lo <= x <= hi
-    if bounds is not None:
-        lo_vec = np.array([b[0] if b[0] is not None else -np.inf for b in bounds], dtype=float)
-        hi_vec = np.array([b[1] if b[1] is not None else np.inf for b in bounds], dtype=float)
-        eye_n = np.eye(n, dtype=float)
+    # Variable bounds -> I x between l and u
+    A_b, l_b, u_b = _bounds_to_triplet(n, bounds)
+    if A_b is not None:
+        blocks_A.append(A_b)
+        blocks_l.append(l_b)
+        blocks_u.append(u_b)
 
-        # x >= lo     ->  lo <= I x <= +inf
-        A_blocks.append(eye_n)
-        lower_blocks.append(lo_vec)
-        upper_blocks.append(np.full(n, np.inf, dtype=float))
-
-        # x <= hi     ->  -inf <= I x <= hi
-        A_blocks.append(eye_n)
-        lower_blocks.append(np.full(n, -np.inf, dtype=float))
-        upper_blocks.append(hi_vec)
-
-    if A_blocks:
-        A = np.vstack(A_blocks)
-        lower = np.concatenate(lower_blocks)
-        upper = np.concatenate(upper_blocks)
+    if not blocks_A:
+        A = np.zeros((0, n), dtype=float)
+        l = np.zeros((0,), dtype=float)
+        u = np.zeros((0,), dtype=float)
     else:
-        # OSQP requires an A matrix; use a single dummy row with unbounded range
-        A = np.zeros((1, n), dtype=float)
-        lower = np.array([-np.inf], dtype=float)
-        upper = np.array([np.inf], dtype=float)
+        A = np.vstack(blocks_A)
+        l = np.concatenate(blocks_l)
+        u = np.concatenate(blocks_u)
 
-    return sp.csc_matrix(P), q, sp.csc_matrix(A), lower, upper
+    P = (Q + Q.T) / 2.0
+    q = c.astype(float, copy=False)
+
+    return P, q, A, l, u
 
 
-class MathOptOSQP(Solver):
+def _merge_triplet_with_bounds(
+    A: Array, l: Array, u: Array,
+    bounds: Optional[Sequence[Tuple[Optional[float], Optional[float]]]]
+):
     """
-    OSQP-backed solver implementing the generic Solver interface.
-
-    Notes
-    -----
-    - Uses the native OSQP Python API internally.
-      You can later swap internals to OR-Tools MathOpt+OSQP without changing this class.
-    - Default tolerances are tightened for small portfolio problems; callers can override
-      via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).
+    Append variable-bounds rows to an existing (A, l, u) triplet.
     """
+    if bounds is None:
+        return A, l, u
 
-    # noinspection PyCompatibility
-    def __init__(self, **options: Any):
-        defaults = dict(
-            eps_abs=1e-6,
-            eps_rel=1e-6,
-            max_iter=20000,
-            polish=True,
-            adaptive_rho=True,
-        )
-        self.options = {**defaults, **(options or {})}
+    n = A.shape[1]
+    A_b, l_b, u_b = _bounds_to_triplet(n, bounds)
+    if A_b is None:
+        return A, l, u
 
-    # noinspection PyCompatibility
+    A2 = np.vstack([A, A_b])
+    l2 = np.concatenate([l, l_b])
+    u2 = np.concatenate([u, u_b])
+    return A2, l2, u2
+
+
+def _clip_to_bounds(x: Array, bounds: Optional[Sequence[Tuple[Optional[float], Optional[float]]]]) -> Array:
+    """
+    Numerically enforce variable bounds post-solve to counter tiny solver residuals.
+    Clips each x_i into [lo_i, hi_i] when bounds exist; leaves unconstrained coords unchanged.
+    """
+    if bounds is None:
+        return x
+    lo = []
+    hi = []
+    for bh in bounds:
+        if bh is None:
+            lo.append(-np.inf); hi.append(np.inf)
+        else:
+            lo.append(float(bh[0]) if bh[0] is not None else -np.inf)
+            hi.append(float(bh[1]) if bh[1] is not None else  np.inf)
+    lo = np.asarray(lo, dtype=float)
+    hi = np.asarray(hi, dtype=float)
+    return np.minimum(np.maximum(x, lo), hi)
+
+
+# ---------- Solver wrapper ----------
+
+@dataclass
+class MathOptOSQP:
+    """
+    Thin OSQP wrapper that understands either:
+      (a) OSQP triplet (A, l, u) [preferred], plus optional bounds
+      (b) Legacy (A_eq, b_eq, A_ineq, b_ineq) plus bounds
+    """
+    verbose: bool = False
+    eps_abs: float = 1e-7
+    eps_rel: float = 1e-7
+    max_iter: int = 100000
+    polish: bool = True  # enable OSQP polishing by default for tighter feasibility
+
     def solve(self, problem: ProblemSpec) -> Solution:
         if osqp is None:
             raise RuntimeError(
                 "osqp is not installed. Install with `pip install osqp` or include the 'solver' extra."
             )
 
-        P, q, A, lower, upper = _stack_osqp_system(
+        # Prefer the triplet if present
+        if (problem.A is not None) and (problem.l is not None) and (problem.u is not None):
+            P = (problem.Q + problem.Q.T) / 2.0
+            q = problem.c.astype(float, copy=False)
+
+            A, l, u = _merge_triplet_with_bounds(problem.A, problem.l, problem.u, problem.bounds)
+
+            Psp = sp.csc_matrix(P)
+            Asp = sp.csc_matrix(A)
+
+            prob = osqp.OSQP()
+            prob.setup(
+                P=Psp,
+                q=q,
+                A=Asp,
+                l=l,
+                u=u,
+                verbose=self.verbose,
+                eps_abs=self.eps_abs,
+                eps_rel=self.eps_rel,
+                max_iter=self.max_iter,
+                polish=self.polish,
+            )
+            res = prob.solve()
+
+            x = res.x if res.x is not None else np.zeros_like(q)
+            # Final small safety: clip to bounds to avoid 1e-7 overshoots.
+            x = _clip_to_bounds(x, problem.bounds)
+
+            obj = float(res.info.obj_val) if getattr(res.info, "obj_val", None) is not None else np.nan
+            status = str(res.info.status).lower() if getattr(res.info, "status", None) is not None else "unknown"
+            info = _osqp_info_to_dict(res.info)
+            return Solution(x=x, obj=obj, status=status, info=info)
+
+        # Fallback to legacy path
+        A_ineq = problem.A_ineq if problem.A_ineq is not None else problem.G
+        b_ineq = problem.b_ineq if problem.b_ineq is not None else problem.h
+
+        P, q, A, l, u = _stack_osqp_system(
             Q=problem.Q,
             c=problem.c,
             A_eq=problem.A_eq,
             b_eq=problem.b_eq,
-            A_ineq=problem.A_ineq,
-            b_ineq=problem.b_ineq,
+            A_ineq=A_ineq,
+            b_ineq=b_ineq,
             bounds=problem.bounds,
         )
 
+        Psp = sp.csc_matrix(P)
+        Asp = sp.csc_matrix(A)
+
         prob = osqp.OSQP()
-        # Last-argument-wins: user-provided options override defaults
-        prob.setup(P=P, q=q, A=A, l=lower, u=upper, **self.options)
+        prob.setup(
+            P=Psp,
+            q=q,
+            A=Asp,
+            l=l,
+            u=u,
+            verbose=self.verbose,
+            eps_abs=self.eps_abs,
+            eps_rel=self.eps_rel,
+            max_iter=self.max_iter,
+            polish=self.polish,
+        )
         res = prob.solve()
 
-        status = str(getattr(res.info, "status", "unknown"))
-        x = np.array(res.x, dtype=float) if getattr(res, "x", None) is not None else np.zeros(P.shape[0])
-        obj = float(getattr(res.info, "obj_val", np.nan))
+        x = res.x if res.x is not None else np.zeros_like(q)
+        x = _clip_to_bounds(x, problem.bounds)
 
-        # Optional: (very small) post-solve snap for equalities already near-feasible.
-        # This avoids pretty-print jitter like sum(w)=0.9999998 in downstream artifacts.
-        if (
-                problem.A_eq is not None
-                and problem.b_eq is not None
-                and res.x is not None
-        ):
-            Ax = problem.A_eq @ x
-            err = problem.b_eq - Ax
-            # Only attempt correction if already very close (keeps inequality feasibility safe in practice)
-            if np.linalg.norm(err, ord=np.inf) <= 1e-3:
-                M = problem.A_eq @ problem.A_eq.T
-                try:
-                    corr = problem.A_eq.T @ np.linalg.solve(M, err)
-                    x = x + corr
-                except np.linalg.LinAlgError:
-                    pass  # keep original x if M is ill-conditioned
-
-        return Solution(
-            x=x,
-            obj_value=obj,
-            status=status,
-            info={
-                "iter": getattr(res.info, "iter", None),
-                "status_val": getattr(res.info, "status_val", None),
-                "run_time": getattr(res.info, "run_time", None),
-                "pri_res": getattr(res.info, "pri_res", None),
-                "dua_res": getattr(res.info, "dua_res", None),
-            },
-        )
+        obj = float(res.info.obj_val) if getattr(res.info, "obj_val", None) is not None else np.nan
+        status = str(res.info.status).lower() if getattr(res.info, "status", None) is not None else "unknown"
+        info = _osqp_info_to_dict(res.info)
+        return Solution(x=x, obj=obj, status=status, info=info)

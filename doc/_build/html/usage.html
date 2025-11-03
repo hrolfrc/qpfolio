@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Methods: Mathematical Formulations" href="methods.html"><link rel="prev" title="Introduction to Quadratic Portfolio Optimization" href="introduction.html">
+<link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Data Generation" href="data_generation.html"><link rel="prev" title="Methods: Mathematical Formulations" href="methods.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Usage - qpfolio 0.1.8 documentation</title>
+        <title>Usage Guide - qpfolio 0.1.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -172,7 +172,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -194,22 +194,26 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Quadratic Portfolio Optimization</a></li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Usage</a><input aria-label="Toggle navigation of Usage" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="philosophy_and_goals.html">Philosophy and Goals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Usage Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="#id1">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="data_generation.html">Data Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Method Comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="applications/personal_and_direct_indexing.html">Personal Indexing and Direct Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="personal_indexing.html">Personal Indexing (Tracking Error, ESG, and Tax-Aware)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reporting.html">Reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_personal_indexing.html">Personal Indexing API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About QPFolio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="philosophy_and_goals.html">Philosophy and Goals</a></li>
 </ul>
 
 </div>
@@ -243,13 +247,16 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h1>
+          <section id="usage-guide">
+<span id="usage"></span><h1>Usage Guide<a class="headerlink" href="#usage-guide" title="Link to this heading">¶</a></h1>
+</section>
+<section id="id1">
+<h1>Usage<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
 <p>This section walks through the basic workflow for using <strong>QPFolio</strong> to simulate asset data,
 build quadratic optimization problems, and visualize results.</p>
 <hr class="docutils" />
@@ -356,17 +363,18 @@ build quadratic optimization problems, and visualize results.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="methods.html#meanvariance-optimization-mvo">Mean–Variance Optimization (MVO)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="methods.html#most-diversified-portfolio-mdp">Most Diversified Portfolio (MDP)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="methods.html#distributionally-robust-optimization-dro-moment-based">Distributionally Robust Optimization (DRO, moment-based)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="methods.html#method-selection-strengths-weaknesses">Method Selection: Strengths &amp; Weaknesses</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="data_generation.html">Data Generation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data_generation.html#synthetic-returns-multivariate-normal">Synthetic Returns (Multivariate Normal)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_generation.html#geometric-brownian-motion-gbm-for-prices">Geometric Brownian Motion (GBM) for Prices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_generation.html#choosing-a-generator">Choosing a Generator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#generate-synthetic-data">1) Generate Synthetic Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#compute-a-frontier-mvo">2) Compute a Frontier (MVO)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#visualize">3) Visualize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#inspect-weights-risk-contributions">4) Inspect Weights &amp; Risk Contributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#notes">Notes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a><ul>
@@ -386,21 +394,6 @@ build quadratic optimization problems, and visualize results.</p>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html#key-takeaways">Key Takeaways</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#generate-synthetic-data">1) Generate Synthetic Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#compute-a-frontier-mvo">2) Compute a Frontier (MVO)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#visualize">3) Visualize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#inspect-weights-risk-contributions">4) Inspect Weights &amp; Risk Contributions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html#notes">Notes</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.core.data">Core Modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.solvers.base">Solver Interfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-qpfolio.core.types">Data Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#developer-notes">Developer Notes</a></li>
-</ul>
-</li>
 </ul>
 </div>
 </section>
@@ -411,23 +404,23 @@ build quadratic optimization problems, and visualize results.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="methods.html">
+          <a class="next-page" href="data_generation.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Methods: Mathematical Formulations</div>
+                <div class="title">Data Generation</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="introduction.html">
+          <a class="prev-page" href="methods.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Introduction to Quadratic Portfolio Optimization</div>
+                <div class="title">Methods: Mathematical Formulations</div>
                 
               </div>
             </a>
@@ -449,36 +442,13 @@ build quadratic optimization problems, and visualize results.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Usage</a><ul>
-<li><a class="reference internal" href="#quick-start">Quick Start</a></li>
-<li><a class="reference internal" href="#interpreting-results">Interpreting Results</a></li>
-<li><a class="reference internal" href="#alternative-models">Alternative Models</a></li>
-<li><a class="reference internal" href="#visualization-options">Visualization Options</a></li>
-<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=ca7ad2ea"></script>
+</div><script src="_static/documentation_options.js?v=22607128"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

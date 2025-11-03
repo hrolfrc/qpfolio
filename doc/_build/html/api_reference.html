@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Reporting" href="reporting.html"><link rel="prev" title="End-to-End Example: Portfolio Workflow" href="example_portfolio_workflow.html">
+<link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Personal Indexing API" href="api_personal_indexing.html"><link rel="prev" title="Reporting" href="reporting.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>API Reference - qpfolio 0.1.8 documentation</title>
@@ -194,22 +194,26 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Quadratic Portfolio Optimization</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="usage.html">Usage</a><input aria-label="Toggle navigation of Usage" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="philosophy_and_goals.html">Philosophy and Goals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="usage.html#id1">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="data_generation.html">Data Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Method Comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">API Reference</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="applications/personal_and_direct_indexing.html">Personal Indexing and Direct Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="personal_indexing.html">Personal Indexing (Tracking Error, ESG, and Tax-Aware)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reporting.html">Reporting</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_personal_indexing.html">Personal Indexing API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About QPFolio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="philosophy_and_goals.html">Philosophy and Goals</a></li>
 </ul>
 
 </div>
@@ -515,26 +519,49 @@ and covariance by <code class="docutils literal notranslate"><span class="pre">f
 
 <dl class="py class" id="module-qpfolio.solvers.mathopt_osqp">
 <dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qpfolio.solvers.mathopt_osqp.</span></span><span class="sig-name descname"><span class="pre">MathOptOSQP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/solvers/mathopt_osqp.html#MathOptOSQP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#qpfolio.solvers.base.Solver" title="qpfolio.solvers.base.Solver"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solver</span></code></a></p>
-<p>OSQP-backed solver implementing the generic Solver interface.</p>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>Uses the native OSQP Python API internally.
-You can later swap internals to OR-Tools MathOpt+OSQP without changing this class.</p></li>
-<li><p>Default tolerances are tightened for small portfolio problems; callers can override
-via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</p></li>
-</ul>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qpfolio.solvers.mathopt_osqp.</span></span><span class="sig-name descname"><span class="pre">MathOptOSQP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_abs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_rel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polish</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/solvers/mathopt_osqp.html#MathOptOSQP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="simple">
+<dt>Thin OSQP wrapper that understands either:</dt><dd><ol class="loweralpha simple">
+<li><p>OSQP triplet (A, l, u) [preferred], plus optional bounds</p></li>
+<li><p>Legacy (A_eq, b_eq, A_ineq, b_ineq) plus bounds</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP.eps_abs">
+<span class="sig-name descname"><span class="pre">eps_abs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-07</span></em><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.eps_abs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP.eps_rel">
+<span class="sig-name descname"><span class="pre">eps_rel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-07</span></em><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.eps_rel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP.max_iter">
+<span class="sig-name descname"><span class="pre">max_iter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100000</span></em><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.max_iter" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP.polish">
+<span class="sig-name descname"><span class="pre">polish</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.polish" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP.solve">
 <span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/solvers/mathopt_osqp.html#MathOptOSQP.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.solve" title="Link to this definition">¶</a></dt>
-<dd><p>Solve a QP and return Solution.</p>
-<dl class="field-list simple">
+<dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#qpfolio.core.types.Solution" title="qpfolio.core.types.Solution"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solution</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.verbose" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -542,10 +569,42 @@ via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</p></li>
 <hr class="docutils" />
 <section id="module-qpfolio.core.types">
 <span id="data-types"></span><h2>Data Types<a class="headerlink" href="#module-qpfolio.core.types" title="Link to this heading">¶</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.core.types.Array">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.types.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><a class="headerlink" href="#qpfolio.core.types.Array" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qpfolio.core.types.</span></span><span class="sig-name descname"><span class="pre">ProblemSpec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_eq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_eq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ineq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_ineq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/types.html#ProblemSpec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.types.ProblemSpec" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qpfolio.core.types.</span></span><span class="sig-name descname"><span class="pre">ProblemSpec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_eq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_eq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ineq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_ineq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/types.html#ProblemSpec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.types.ProblemSpec" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generic QP container with light validation.</p>
+<dl class="simple">
+<dt>Objective:</dt><dd><p>minimize 0.5 * x^T Q x + c^T x</p>
+</dd>
+</dl>
+<p>Linear constraints (two supported forms):</p>
+<ol class="arabic simple">
+<li><p>OSQP triplet (preferred):
+l &lt;= A x &lt;= u</p></li>
+<li><p>Legacy equality/inequality + bounds (still supported):
+A_eq x = b_eq
+A_ineq x &lt;= b_ineq
+bounds[i] = (lb_i, ub_i)</p></li>
+</ol>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>You may supply either (1) or (2). If both are supplied, the solver
+will prefer (1) and ignore (2).</p></li>
+<li><p>Bounds are allowed with either form. When using the triplet, bounds
+are folded into (A,l,u) before calling OSQP.</p></li>
+</ul>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.A">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.A" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.A_eq">
 <span class="sig-name descname"><span class="pre">A_eq</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.A_eq" title="Link to this definition">¶</a></dt>
@@ -554,6 +613,11 @@ via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.A_ineq">
 <span class="sig-name descname"><span class="pre">A_ineq</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.A_ineq" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.G">
+<span class="sig-name descname"><span class="pre">G</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.G" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -573,28 +637,44 @@ via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.bounds">
-<span class="sig-name descname"><span class="pre">bounds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.bounds" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">bounds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">],</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.bounds" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.c">
-<span class="sig-name descname"><span class="pre">c</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.c" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">c</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.c" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.h">
+<span class="sig-name descname"><span class="pre">h</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.h" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.l">
+<span class="sig-name descname"><span class="pre">l</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.l" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qpfolio.core.types.ProblemSpec.u">
+<span class="sig-name descname"><span class="pre">u</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.ProblemSpec.u" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="qpfolio.core.types.Solution">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qpfolio.core.types.</span></span><span class="sig-name descname"><span class="pre">Solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/types.html#Solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.types.Solution" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qpfolio.core.types.</span></span><span class="sig-name descname"><span class="pre">Solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/types.html#Solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.types.Solution" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Standardized QP solution container.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qpfolio.core.types.Solution.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></em><a class="headerlink" href="#qpfolio.core.types.Solution.info" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qpfolio.core.types.Solution.info" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="qpfolio.core.types.Solution.obj_value">
-<span class="sig-name descname"><span class="pre">obj_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></em><a class="headerlink" href="#qpfolio.core.types.Solution.obj_value" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="qpfolio.core.types.Solution.obj">
+<span class="sig-name descname"><span class="pre">obj</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></em><a class="headerlink" href="#qpfolio.core.types.Solution.obj" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -627,23 +707,23 @@ via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="reporting.html">
+          <a class="next-page" href="api_personal_indexing.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Reporting</div>
+                <div class="title">Personal Indexing API</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="example_portfolio_workflow.html">
+          <a class="prev-page" href="reporting.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">End-to-End Example: Portfolio Workflow</div>
+                <div class="title">Reporting</div>
                 
               </div>
             </a>
@@ -712,25 +792,36 @@ via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP"><code class="docutils literal notranslate"><span class="pre">MathOptOSQP</span></code></a><ul>
+<li><a class="reference internal" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.eps_abs"><code class="docutils literal notranslate"><span class="pre">MathOptOSQP.eps_abs</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.eps_rel"><code class="docutils literal notranslate"><span class="pre">MathOptOSQP.eps_rel</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.max_iter"><code class="docutils literal notranslate"><span class="pre">MathOptOSQP.max_iter</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.polish"><code class="docutils literal notranslate"><span class="pre">MathOptOSQP.polish</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.solve"><code class="docutils literal notranslate"><span class="pre">MathOptOSQP.solve()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.verbose"><code class="docutils literal notranslate"><span class="pre">MathOptOSQP.verbose</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-qpfolio.core.types">Data Types</a><ul>
+<li><a class="reference internal" href="#qpfolio.core.types.Array"><code class="docutils literal notranslate"><span class="pre">Array</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec"><code class="docutils literal notranslate"><span class="pre">ProblemSpec</span></code></a><ul>
+<li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.A"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.A</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.A_eq"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.A_eq</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.A_ineq"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.A_ineq</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.G"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.G</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.Q"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.Q</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.b_eq"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.b_eq</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.b_ineq"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.b_ineq</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.bounds"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.bounds</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.c"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.c</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.h"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.h</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.l"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.l</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.types.ProblemSpec.u"><code class="docutils literal notranslate"><span class="pre">ProblemSpec.u</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#qpfolio.core.types.Solution"><code class="docutils literal notranslate"><span class="pre">Solution</span></code></a><ul>
 <li><a class="reference internal" href="#qpfolio.core.types.Solution.info"><code class="docutils literal notranslate"><span class="pre">Solution.info</span></code></a></li>
-<li><a class="reference internal" href="#qpfolio.core.types.Solution.obj_value"><code class="docutils literal notranslate"><span class="pre">Solution.obj_value</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.types.Solution.obj"><code class="docutils literal notranslate"><span class="pre">Solution.obj</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.Solution.status"><code class="docutils literal notranslate"><span class="pre">Solution.status</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.types.Solution.x"><code class="docutils literal notranslate"><span class="pre">Solution.x</span></code></a></li>
 </ul>
@@ -749,7 +840,7 @@ via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</p></li>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=ca7ad2ea"></script>
+</div><script src="_static/documentation_options.js?v=22607128"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

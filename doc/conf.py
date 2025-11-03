@@ -15,8 +15,10 @@ extensions = [
     'sphinx.ext.viewcode',
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.doctest"
 ]
-
+doctest_test_doctest_blocks = "default"
 html_theme = "furo"
 templates_path = ["_templates"]
 html_static_path = ['_static']

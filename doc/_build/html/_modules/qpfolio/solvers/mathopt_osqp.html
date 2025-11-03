@@ -193,22 +193,26 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to Quadratic Portfolio Optimization</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../philosophy_and_goals.html">Philosophy and Goals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html#id1">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../data_generation.html">Data Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../comparison.html">Method Comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../applications/personal_and_direct_indexing.html">Personal Indexing and Direct Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../personal_indexing.html">Personal Indexing (Tracking Error, ESG, and Tax-Aware)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reporting.html">Reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_personal_indexing.html">Personal Indexing API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../about.html">About QPFolio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../philosophy_and_goals.html">Philosophy and Goals</a></li>
 </ul>
 
 </div>
@@ -242,127 +246,191 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for qpfolio.solvers.mathopt_osqp</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="c1"># qpfolio/solvers/mathopt_osqp.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">osqp</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">osqp</span>  <span class="c1"># type: ignore</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">osqp</span> <span class="o">=</span> <span class="kc">None</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">qpfolio.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProblemSpec</span><span class="p">,</span> <span class="n">Solution</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qpfolio.solvers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qpfolio.core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProblemSpec</span><span class="p">,</span> <span class="n">Solution</span><span class="p">,</span> <span class="n">Array</span>
 
 
-<span class="c1"># noinspection PyCompatibility</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_stack_osqp_system</span><span class="p">(</span>
-        <span class="n">Q</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">c</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">A_eq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">b_eq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">A_ineq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">b_ineq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-        <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">sp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="c1"># ---------- Helpers ----------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_osqp_info_to_dict</span><span class="p">(</span><span class="n">info_ns</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build OSQP matrices (P, q, A, lower, upper) for the problem:</span>
+<span class="sd">    Convert OSQP info (often a SimpleNamespace) to a plain dict, tolerating</span>
+<span class="sd">    version differences in field names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">info_ns</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
 
-<span class="sd">        minimize   (1/2) x^T Q x + c^T x</span>
-<span class="sd">        subject to A_eq x = b_eq</span>
-<span class="sd">                   A_ineq x &lt;= b_ineq</span>
-<span class="sd">                   bounds[i][0] &lt;= x_i &lt;= bounds[i][1]</span>
+    <span class="c1"># Normalize common residual fields if missing on this OSQP version</span>
+    <span class="k">if</span> <span class="s2">&quot;pri_res&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base</span><span class="p">:</span>
+        <span class="n">base</span><span class="p">[</span><span class="s2">&quot;pri_res&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">info_ns</span><span class="p">,</span> <span class="s2">&quot;pri_res&quot;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">info_ns</span><span class="p">,</span> <span class="s2">&quot;pri_res_norm&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="k">if</span> <span class="s2">&quot;dua_res&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base</span><span class="p">:</span>
+        <span class="n">base</span><span class="p">[</span><span class="s2">&quot;dua_res&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">info_ns</span><span class="p">,</span> <span class="s2">&quot;dua_res&quot;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">info_ns</span><span class="p">,</span> <span class="s2">&quot;dua_res_norm&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    P : csc_matrix</span>
-<span class="sd">    q : ndarray</span>
-<span class="sd">    A : csc_matrix</span>
-<span class="sd">    lower : ndarray</span>
-<span class="sd">    upper : ndarray</span>
+    <span class="c1"># Common extras (populate if present, otherwise None)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;iter&quot;</span><span class="p">,</span> <span class="s2">&quot;status_val&quot;</span><span class="p">,</span> <span class="s2">&quot;setup_time&quot;</span><span class="p">,</span> <span class="s2">&quot;solve_time&quot;</span><span class="p">,</span> <span class="s2">&quot;rho&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base</span><span class="p">:</span>
+            <span class="n">base</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">info_ns</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">base</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_bounds_to_triplet</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert variable bounds into an OSQP-style triplet (A_b, l_b, u_b),</span>
+<span class="sd">    where A_b = I (n x n), l_b[i] &lt;= x_i &lt;= u_b[i].</span>
+<span class="sd">    None maps to +/- inf appropriately.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bh</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">bh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">bh</span>
+        <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">if</span> <span class="n">lo</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">lo</span><span class="p">)</span>
+        <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">if</span> <span class="n">hi</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">I</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">u</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_stack_osqp_system</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">Q</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span>
+    <span class="n">c</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span>
+    <span class="n">A_eq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">],</span>
+    <span class="n">b_eq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">],</span>
+    <span class="n">A_ineq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">],</span>
+    <span class="n">b_ineq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">],</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]],</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build OSQP system P, q, A, l, u from legacy (A_eq, b_eq, A_ineq, b_ineq, bounds).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        P (n,n)  : quadratic matrix (symmetrized)</span>
+<span class="sd">        q (n,)   : linear vector</span>
+<span class="sd">        A (m,n)  : constraint matrix</span>
+<span class="sd">        l (m,)   : lower bounds</span>
+<span class="sd">        u (m,)   : upper bounds</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">blocks_A</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">blocks_l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">blocks_u</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="c1"># Symmetrize Q and add a tiny ridge if necessary for numerical stability</span>
-    <span class="n">P</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">Q</span> <span class="o">+</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-    <span class="n">ev_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">ev_min</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">:</span>
-        <span class="n">P</span> <span class="o">=</span> <span class="n">P</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1e-8</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">ev_min</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-
-    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">c</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="n">A_blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">lower_blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">upper_blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="c1"># Equality constraints: A_eq x = b_eq  -&gt; lower == upper == b_eq</span>
+    <span class="c1"># Equality constraints: A_eq x = b_eq  -&gt; b_eq &lt;= A_eq x &lt;= b_eq</span>
     <span class="k">if</span> <span class="n">A_eq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">b_eq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">A_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A_eq</span><span class="p">)</span>
-        <span class="n">b_eqf</span> <span class="o">=</span> <span class="n">b_eq</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">lower_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b_eqf</span><span class="p">)</span>
-        <span class="n">upper_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b_eqf</span><span class="p">)</span>
+        <span class="n">blocks_A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A_eq</span><span class="p">)</span>
+        <span class="n">blocks_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b_eq</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">blocks_u</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b_eq</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
-    <span class="c1"># Inequality constraints: A_ineq x &lt;= b_ineq  -&gt;  -inf &lt;= A_ineq x &lt;= b_ineq</span>
+    <span class="c1"># Inequality constraints: A_ineq x &lt;= b_ineq -&gt; -inf &lt;= A_ineq x &lt;= b_ineq</span>
     <span class="k">if</span> <span class="n">A_ineq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">b_ineq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">m_ineq</span> <span class="o">=</span> <span class="n">A_ineq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">A_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A_ineq</span><span class="p">)</span>
-        <span class="n">lower_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">m_ineq</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
-        <span class="n">upper_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b_ineq</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">blocks_A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A_ineq</span><span class="p">)</span>
+        <span class="n">blocks_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">b_ineq</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+        <span class="n">blocks_u</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b_ineq</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
-    <span class="c1"># Variable bounds: lo &lt;= x &lt;= hi</span>
-    <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">lo_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-        <span class="n">hi_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-        <span class="n">eye_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="c1"># Variable bounds -&gt; I x between l and u</span>
+    <span class="n">A_b</span><span class="p">,</span> <span class="n">l_b</span><span class="p">,</span> <span class="n">u_b</span> <span class="o">=</span> <span class="n">_bounds_to_triplet</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">A_b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">blocks_A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A_b</span><span class="p">)</span>
+        <span class="n">blocks_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l_b</span><span class="p">)</span>
+        <span class="n">blocks_u</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u_b</span><span class="p">)</span>
 
-        <span class="c1"># x &gt;= lo     -&gt;  lo &lt;= I x &lt;= +inf</span>
-        <span class="n">A_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eye_n</span><span class="p">)</span>
-        <span class="n">lower_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lo_vec</span><span class="p">)</span>
-        <span class="n">upper_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
-
-        <span class="c1"># x &lt;= hi     -&gt;  -inf &lt;= I x &lt;= hi</span>
-        <span class="n">A_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eye_n</span><span class="p">)</span>
-        <span class="n">lower_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
-        <span class="n">upper_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hi_vec</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">A_blocks</span><span class="p">:</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">A_blocks</span><span class="p">)</span>
-        <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">lower_blocks</span><span class="p">)</span>
-        <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">upper_blocks</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">blocks_A</span><span class="p">:</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># OSQP requires an A matrix; use a single dummy row with unbounded range</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-        <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-        <span class="n">upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">blocks_A</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">blocks_l</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">blocks_u</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">sp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">P</span><span class="p">),</span> <span class="n">q</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="p">(</span><span class="n">Q</span> <span class="o">+</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
+    <span class="k">return</span> <span class="n">P</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">u</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_triplet_with_bounds</span><span class="p">(</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">l</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]]</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Append variable-bounds rows to an existing (A, l, u) triplet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">u</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">A_b</span><span class="p">,</span> <span class="n">l_b</span><span class="p">,</span> <span class="n">u_b</span> <span class="o">=</span> <span class="n">_bounds_to_triplet</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">A_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">u</span>
+
+    <span class="n">A2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">A</span><span class="p">,</span> <span class="n">A_b</span><span class="p">])</span>
+    <span class="n">l2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">l</span><span class="p">,</span> <span class="n">l_b</span><span class="p">])</span>
+    <span class="n">u2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">u_b</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">A2</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">u2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_clip_to_bounds</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]])</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Numerically enforce variable bounds post-solve to counter tiny solver residuals.</span>
+<span class="sd">    Clips each x_i into [lo_i, hi_i] when bounds exist; leaves unconstrained coords unchanged.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span>
+    <span class="n">lo</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">hi</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">bh</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">);</span> <span class="n">hi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bh</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">bh</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+            <span class="n">hi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">bh</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">bh</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span>  <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">lo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lo</span><span class="p">),</span> <span class="n">hi</span><span class="p">)</span>
+
+
+<span class="c1"># ---------- Solver wrapper ----------</span>
 
 <div class="viewcode-block" id="MathOptOSQP">
 <a class="viewcode-back" href="../../../api_reference.html#qpfolio.solvers.mathopt_osqp.MathOptOSQP">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MathOptOSQP</span><span class="p">(</span><span class="n">Solver</span><span class="p">):</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MathOptOSQP</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    OSQP-backed solver implementing the generic Solver interface.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    - Uses the native OSQP Python API internally.</span>
-<span class="sd">      You can later swap internals to OR-Tools MathOpt+OSQP without changing this class.</span>
-<span class="sd">    - Default tolerances are tightened for small portfolio problems; callers can override</span>
-<span class="sd">      via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</span>
+<span class="sd">    Thin OSQP wrapper that understands either:</span>
+<span class="sd">      (a) OSQP triplet (A, l, u) [preferred], plus optional bounds</span>
+<span class="sd">      (b) Legacy (A_eq, b_eq, A_ineq, b_ineq) plus bounds</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">eps_abs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span>
+    <span class="n">eps_rel</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span>
+    <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span>
+    <span class="n">polish</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># enable OSQP polishing by default for tighter feasibility</span>
 
-    <span class="c1"># noinspection PyCompatibility</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-        <span class="n">defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">eps_abs</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
-            <span class="n">eps_rel</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
-            <span class="n">max_iter</span><span class="o">=</span><span class="mi">20000</span><span class="p">,</span>
-            <span class="n">polish</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">adaptive_rho</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">defaults</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="n">options</span> <span class="ow">or</span> <span class="p">{})}</span>
-
-    <span class="c1"># noinspection PyCompatibility</span>
 <div class="viewcode-block" id="MathOptOSQP.solve">
 <a class="viewcode-back" href="../../../api_reference.html#qpfolio.solvers.mathopt_osqp.MathOptOSQP.solve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">:</span> <span class="n">ProblemSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Solution</span><span class="p">:</span>
@@ -371,55 +439,79 @@
                 <span class="s2">&quot;osqp is not installed. Install with `pip install osqp` or include the &#39;solver&#39; extra.&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">P</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="n">_stack_osqp_system</span><span class="p">(</span>
+        <span class="c1"># Prefer the triplet if present</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">A</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">l</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">u</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">Q</span> <span class="o">+</span> <span class="n">problem</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">A</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">u</span> <span class="o">=</span> <span class="n">_merge_triplet_with_bounds</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span>
+
+            <span class="n">Psp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+            <span class="n">Asp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+            <span class="n">prob</span> <span class="o">=</span> <span class="n">osqp</span><span class="o">.</span><span class="n">OSQP</span><span class="p">()</span>
+            <span class="n">prob</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span>
+                <span class="n">P</span><span class="o">=</span><span class="n">Psp</span><span class="p">,</span>
+                <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                <span class="n">A</span><span class="o">=</span><span class="n">Asp</span><span class="p">,</span>
+                <span class="n">l</span><span class="o">=</span><span class="n">l</span><span class="p">,</span>
+                <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">eps_abs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_abs</span><span class="p">,</span>
+                <span class="n">eps_rel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_rel</span><span class="p">,</span>
+                <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
+                <span class="n">polish</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">polish</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">prob</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span> <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+            <span class="c1"># Final small safety: clip to bounds to avoid 1e-7 overshoots.</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">_clip_to_bounds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span>
+
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">obj_val</span><span class="p">)</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;obj_val&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">status</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;unknown&quot;</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">_osqp_info_to_dict</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Solution</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+
+        <span class="c1"># Fallback to legacy path</span>
+        <span class="n">A_ineq</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">A_ineq</span> <span class="k">if</span> <span class="n">problem</span><span class="o">.</span><span class="n">A_ineq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">problem</span><span class="o">.</span><span class="n">G</span>
+        <span class="n">b_ineq</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">b_ineq</span> <span class="k">if</span> <span class="n">problem</span><span class="o">.</span><span class="n">b_ineq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">problem</span><span class="o">.</span><span class="n">h</span>
+
+        <span class="n">P</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">u</span> <span class="o">=</span> <span class="n">_stack_osqp_system</span><span class="p">(</span>
             <span class="n">Q</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span>
             <span class="n">c</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">c</span><span class="p">,</span>
             <span class="n">A_eq</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">A_eq</span><span class="p">,</span>
             <span class="n">b_eq</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">b_eq</span><span class="p">,</span>
-            <span class="n">A_ineq</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">A_ineq</span><span class="p">,</span>
-            <span class="n">b_ineq</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">b_ineq</span><span class="p">,</span>
+            <span class="n">A_ineq</span><span class="o">=</span><span class="n">A_ineq</span><span class="p">,</span>
+            <span class="n">b_ineq</span><span class="o">=</span><span class="n">b_ineq</span><span class="p">,</span>
             <span class="n">bounds</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span>
         <span class="p">)</span>
 
+        <span class="n">Psp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+        <span class="n">Asp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
         <span class="n">prob</span> <span class="o">=</span> <span class="n">osqp</span><span class="o">.</span><span class="n">OSQP</span><span class="p">()</span>
-        <span class="c1"># Last-argument-wins: user-provided options override defaults</span>
-        <span class="n">prob</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="n">upper</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">prob</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span>
+            <span class="n">P</span><span class="o">=</span><span class="n">Psp</span><span class="p">,</span>
+            <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+            <span class="n">A</span><span class="o">=</span><span class="n">Asp</span><span class="p">,</span>
+            <span class="n">l</span><span class="o">=</span><span class="n">l</span><span class="p">,</span>
+            <span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">eps_abs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_abs</span><span class="p">,</span>
+            <span class="n">eps_rel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_rel</span><span class="p">,</span>
+            <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="n">polish</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">polish</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">prob</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
-        <span class="n">status</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown&quot;</span><span class="p">))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;obj_val&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span> <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">_clip_to_bounds</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span>
 
-        <span class="c1"># Optional: (very small) post-solve snap for equalities already near-feasible.</span>
-        <span class="c1"># This avoids pretty-print jitter like sum(w)=0.9999998 in downstream artifacts.</span>
-        <span class="k">if</span> <span class="p">(</span>
-                <span class="n">problem</span><span class="o">.</span><span class="n">A_eq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="ow">and</span> <span class="n">problem</span><span class="o">.</span><span class="n">b_eq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="ow">and</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">):</span>
-            <span class="n">Ax</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">A_eq</span> <span class="o">@</span> <span class="n">x</span>
-            <span class="n">err</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">b_eq</span> <span class="o">-</span> <span class="n">Ax</span>
-            <span class="c1"># Only attempt correction if already very close (keeps inequality feasibility safe in practice)</span>
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">1e-3</span><span class="p">:</span>
-                <span class="n">M</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">A_eq</span> <span class="o">@</span> <span class="n">problem</span><span class="o">.</span><span class="n">A_eq</span><span class="o">.</span><span class="n">T</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">corr</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">A_eq</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
-                    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">corr</span>
-                <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">:</span>
-                    <span class="k">pass</span>  <span class="c1"># keep original x if M is ill-conditioned</span>
-
-        <span class="k">return</span> <span class="n">Solution</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-            <span class="n">obj_value</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
-            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-            <span class="n">info</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;iter&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;iter&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="s2">&quot;status_val&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;status_val&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="s2">&quot;run_time&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;run_time&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="s2">&quot;pri_res&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;pri_res&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="s2">&quot;dua_res&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;dua_res&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="p">},</span>
-        <span class="p">)</span></div>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">obj_val</span><span class="p">)</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;obj_val&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">status</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;unknown&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">_osqp_info_to_dict</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Solution</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -454,7 +546,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=edcd63a1"></script>
+</div><script src="../../../_static/documentation_options.js?v=22607128"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

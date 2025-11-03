@@ -193,22 +193,26 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction to Quadratic Portfolio Optimization</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../philosophy_and_goals.html">Philosophy and Goals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../methods.html">Methods: Mathematical Formulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html#id1">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../data_generation.html">Data Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../comparison.html">Method Comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../applications/personal_and_direct_indexing.html">Personal Indexing and Direct Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../personal_indexing.html">Personal Indexing (Tracking Error, ESG, and Tax-Aware)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reporting.html">Reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_personal_indexing.html">Personal Indexing API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../about.html">About QPFolio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../philosophy_and_goals.html">Philosophy and Goals</a></li>
 </ul>
 
 </div>
@@ -242,34 +246,138 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for qpfolio.core.types</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span>
+<span></span><span class="c1"># qpfolio/core/types.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="n">ArrayLike</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="n">Array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
 
 <div class="viewcode-block" id="ProblemSpec">
 <a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.types.ProblemSpec">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProblemSpec</span><span class="p">:</span>
-    <span class="n">Q</span><span class="p">:</span> <span class="n">ArrayLike</span>                      <span class="c1"># (n,n) PSD</span>
-    <span class="n">c</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># (n,)</span>
-    <span class="n">A_eq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (m_eq,n)</span>
-    <span class="n">b_eq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (m_eq,)</span>
-    <span class="n">A_ineq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (m_ineq,n)</span>
-    <span class="n">b_ineq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (m_ineq,)</span>
-    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># per-variable (lo, hi)</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic QP container with light validation.</span>
+
+<span class="sd">    Objective:</span>
+<span class="sd">        minimize 0.5 * x^T Q x + c^T x</span>
+
+<span class="sd">    Linear constraints (two supported forms):</span>
+
+<span class="sd">    (1) OSQP triplet (preferred):</span>
+<span class="sd">        l &lt;= A x &lt;= u</span>
+
+<span class="sd">    (2) Legacy equality/inequality + bounds (still supported):</span>
+<span class="sd">        A_eq x = b_eq</span>
+<span class="sd">        A_ineq x &lt;= b_ineq</span>
+<span class="sd">        bounds[i] = (lb_i, ub_i)</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        - You may supply either (1) or (2). If both are supplied, the solver</span>
+<span class="sd">          will prefer (1) and ignore (2).</span>
+<span class="sd">        - Bounds are allowed with either form. When using the triplet, bounds</span>
+<span class="sd">          are folded into (A,l,u) before calling OSQP.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Objective</span>
+    <span class="n">Q</span><span class="p">:</span> <span class="n">Array</span>                      <span class="c1"># (n, n) PSD / symmetric</span>
+    <span class="n">c</span><span class="p">:</span> <span class="n">Array</span>                      <span class="c1"># (n,)</span>
+
+    <span class="c1"># --- OSQP triplet (optional) ---</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># (m, n)</span>
+    <span class="n">l</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># (m,)</span>
+    <span class="n">u</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># (m,)</span>
+
+    <span class="c1"># --- Variable bounds (optional) ---</span>
+    <span class="c1"># Each entry is (lo, hi); use None for +/- inf.</span>
+    <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># len n</span>
+
+    <span class="c1"># --- Legacy equality/inequality forms (optional) ---</span>
+    <span class="n">A_eq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (k, n)</span>
+    <span class="n">b_eq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (k,)</span>
+    <span class="n">A_ineq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (p, n)</span>
+    <span class="n">b_ineq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (p,)</span>
+
+    <span class="c1"># (Kept for compatibility with any code that references these names)</span>
+    <span class="n">G</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># alias for A_ineq (if ever used)</span>
+    <span class="n">h</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># alias for b_ineq (if ever used)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Validate Q, c</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Q must be square (n x n).&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;c must have shape (n,).&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate OSQP triplet if any is provided</span>
+        <span class="n">using_triplet</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">using_triplet</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If using OSQP triplet, A, l, and u must be provided together.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A must have shape (m, n).&quot;</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">m</span><span class="p">,)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">m</span><span class="p">,):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;l and u must have shape (m,).&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each row bound must satisfy l[i] &lt;= u[i].&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate bounds if present</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bounds must have length n.&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bh</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">bh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># allow None entry meaning no bounds row at all</span>
+                    <span class="k">continue</span>
+                <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">bh</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">lo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">hi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">lo</span> <span class="o">&gt;</span> <span class="n">hi</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bounds[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">] has lo &gt; hi.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate legacy equality</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_eq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_eq</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_eq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A_eq must have shape (k, n).&quot;</span><span class="p">)</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_eq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_eq</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_eq</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">k</span><span class="p">,):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;b_eq must have shape (k,).&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate legacy inequality</span>
+        <span class="c1"># Accept either (A_ineq, b_ineq) or (G, h) as aliases. Don&#39;t require both sets.</span>
+        <span class="n">A_ineq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_ineq</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">A_ineq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span>
+        <span class="n">b_ineq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_ineq</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_ineq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">A_ineq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">b_ineq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">A_ineq</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b_ineq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If using inequality form, both A_ineq(G) and b_ineq(h) must be provided.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">A_ineq</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">A_ineq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A_ineq/G must have shape (p, n).&quot;</span><span class="p">)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">A_ineq</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">b_ineq</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">p</span><span class="p">,):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;b_ineq/h must have shape (p,).&quot;</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="Solution">
 <a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.types.Solution">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Solution</span><span class="p">:</span>
-    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span>
-    <span class="n">obj_value</span><span class="p">:</span> <span class="nb">float</span>
-    <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">info</span><span class="p">:</span> <span class="nb">dict</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standardized QP solution container.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Array</span>                 <span class="c1"># optimal variable vector (n,)</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="nb">float</span>               <span class="c1"># objective value at x (0.5 x^T Q x + c^T x)</span>
+    <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>              <span class="c1"># e.g., &quot;solved&quot;, &quot;optimal&quot;, &quot;infeasible&quot;, etc.</span>
+    <span class="n">info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># raw solver stats/timings/etc.</span></div>
 
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Array&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ProblemSpec&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Solution&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </pre></div>
         </article>
       </div>
@@ -302,7 +410,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=edcd63a1"></script>
+</div><script src="../../../_static/documentation_options.js?v=22607128"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

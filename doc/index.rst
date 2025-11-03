@@ -149,11 +149,18 @@ Project Information
 
    installation
    introduction
+   philosophy_and_goals
+   architecture
+   methods
    usage
-   api_reference
+   applications/personal_and_direct_indexing
+   personal_indexing
    visualization
    reporting
+   api_reference
+   api_personal_indexing
    contributing
    changelog
    about
-   philosophy_and_goals
+
+

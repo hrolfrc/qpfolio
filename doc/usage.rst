@@ -1,3 +1,9 @@
+.. _usage:
+
+Usage Guide
+===========
+
+
 Usage
 =====
 
@@ -124,10 +130,8 @@ Explore the :doc:`api_reference` for detailed class and function documentation.
    :maxdepth: 2
    :caption: User Guide
 
-   methods
    data_generation
+   example_portfolio_workflow
    visualization
    comparison
-   example_portfolio_workflow
-   api_reference
 

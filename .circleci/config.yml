@@ -1,7 +1,8 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@3.3.0
+  python: circleci/python@2.1.1
+  codecov: codecov/codecov@5
 
 jobs:
   lint_and_test:
