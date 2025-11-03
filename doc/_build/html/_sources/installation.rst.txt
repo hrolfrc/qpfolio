@@ -26,7 +26,7 @@ You should see version information similar to:
 .. code-block:: text
 
    Name: qpfolio
-   Version: 0.1.0a0
+   Version: 0.1.5
    Summary: Quadratic programming portfolio optimization library using OR-Tools and OSQP.
 
 ----
