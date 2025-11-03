@@ -1,43 +1,46 @@
+# .circleci/config.yml (append to your current file)
 version: 2.1
 
 orbs:
   python: circleci/python@3.3.0
-  codecov: codecov/codecov@5
 
 jobs:
-  lint_and_test:
+  publish_pypi:
     docker:
       - image: cimg/python:3.11
     steps:
       - checkout
       - run:
-          name: Upgrade pip
-          command: python -m pip install --upgrade pip
-      - run:
-          name: Install package with dev extras
-          command: pip install -e ".[dev]"
-      - run:
-          name: Run linters
+          name: Upgrade pip & install build deps
           command: |
-            ruff --version
-            ruff check .
+            python -m pip install --upgrade pip
+            pip install build twine
       - run:
-          name: Run tests (terminal + XML coverage)
-          command: |
-            pytest -v \
-              --cov=qpfolio \
-              --cov-report=term-missing \
-              --cov-report=xml:coverage.xml
-      # Optional: keep the XML as a CircleCI artifact too
-      - store_artifacts:
-          path: coverage.xml
-      # Codecov orb v5 auto-detects coverage files at repo root; no extra params needed
-      - codecov/upload
-      - run:
-          name: Build wheel
+          name: Build qpfolio (sdist + wheel)
           command: python -m build
+      - run:
+          name: Twine check
+          command: twine check dist/*
+      - run:
+          name: Upload to PyPI
+          command: |
+            if [ -z "$PYPI_TOKEN" ]; then
+              echo "PYPI_TOKEN is not set"; exit 1
+            fi
+            python -m twine upload -u __token__ -p "$PYPI_TOKEN" dist/*
 
 workflows:
   build_and_test:
     jobs:
       - lint_and_test
+
+  release:
+    when: on_tag
+    jobs:
+      - publish_pypi:
+          context: pypi  # define a CircleCI context that contains PYPI_TOKEN
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
