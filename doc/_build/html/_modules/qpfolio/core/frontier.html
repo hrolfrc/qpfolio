@@ -194,6 +194,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reporting.html">Reporting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../about.html">About QPFolio</a></li>
@@ -231,27 +233,32 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for qpfolio.core.frontier</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_mvo_problem</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.solve</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_qp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solution</span>
 
 
+<span class="c1"># noinspection PyCompatibility</span>
 <div class="viewcode-block" id="compute_frontier">
 <a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.frontier.compute_frontier">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_frontier</span><span class="p">(</span><span class="n">mu</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">r_targets</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">solver</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span>
-    <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Solution</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_frontier</span><span class="p">(</span><span class="n">mu</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">targets</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">solver</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Solution</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return list of (risk, ret, solution) along frontier.&quot;&quot;&quot;</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">r_targets</span><span class="p">:</span>
-        <span class="n">problem</span> <span class="o">=</span> <span class="n">build_mvo_problem</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">,</span> <span class="n">r_target</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">long_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">sol</span> <span class="o">=</span> <span class="n">solve_qp</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">solver</span><span class="p">)</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span>
-        <span class="n">port_ret</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">mu</span><span class="p">)</span>
-        <span class="n">port_var</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">Sigma</span> <span class="o">@</span> <span class="n">w</span><span class="p">)</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">port_var</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">port_ret</span><span class="p">,</span> <span class="n">sol</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">results</span></div>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">R</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="n">build_mvo_problem</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">,</span> <span class="n">r_target</span><span class="o">=</span><span class="n">R</span><span class="p">,</span> <span class="n">long_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">status</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;solved&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>  <span class="c1"># skip infeasible or non-optimal points</span>
+        <span class="n">risk</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span> <span class="o">@</span> <span class="n">Sigma</span> <span class="o">@</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span> <span class="o">@</span> <span class="n">mu</span><span class="p">)</span>
+        <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">risk</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">sol</span><span class="p">))</span>
+    <span class="c1"># ensure increasing risk order (tiny jitter possible)</span>
+    <span class="n">points</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">points</span></div>
 
 </pre></div>
         </article>

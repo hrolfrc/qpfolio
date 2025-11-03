@@ -193,6 +193,8 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reporting.html">Reporting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About QPFolio</a></li>
@@ -232,7 +234,7 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#Q"><strong>Q</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#X"><strong>X</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#Q"><strong>Q</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#X"><strong>X</strong></a></div>
 </section>
 <section id="A" class="genindex-section">
   <h2>A</h2>
@@ -256,10 +258,12 @@
 </li>
         <li><a href="api_reference.html#qpfolio.core.types.ProblemSpec.b_ineq">b_ineq (qpfolio.core.types.ProblemSpec attribute)</a>
 </li>
-        <li><a href="api_reference.html#qpfolio.core.types.ProblemSpec.bounds">bounds (qpfolio.core.types.ProblemSpec attribute)</a>
+        <li><a href="api_reference.html#qpfolio.core.metrics.beta_to_benchmark">beta_to_benchmark() (in module qpfolio.core.metrics)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_reference.html#qpfolio.core.types.ProblemSpec.bounds">bounds (qpfolio.core.types.ProblemSpec attribute)</a>
+</li>
         <li><a href="api_reference.html#qpfolio.core.models.build_dro_lite_problem">build_dro_lite_problem() (in module qpfolio.core.models)</a>
 </li>
         <li><a href="api_reference.html#qpfolio.core.models.build_mdp_problem">build_mdp_problem() (in module qpfolio.core.models)</a>
@@ -304,6 +308,16 @@
   </tr></table>
 </section>
 
+<section id="F" class="genindex-section">
+  <h2>F</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_reference.html#qpfolio.core.metrics.frontier_to_frame">frontier_to_frame() (in module qpfolio.core.metrics)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
 <section id="H" class="genindex-section">
   <h2>H</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
@@ -319,6 +333,10 @@
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api_reference.html#qpfolio.core.types.Solution.info">info (qpfolio.core.types.Solution attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_reference.html#qpfolio.core.metrics.information_ratio">information_ratio() (in module qpfolio.core.metrics)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -371,10 +389,18 @@
   <h2>P</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_reference.html#qpfolio.core.visualize.plot_corr_heatmap">plot_corr_heatmap() (in module qpfolio.core.visualize)</a>
+</li>
         <li><a href="api_reference.html#qpfolio.core.visualize.plot_frontier">plot_frontier() (in module qpfolio.core.visualize)</a>
+</li>
+        <li><a href="api_reference.html#qpfolio.core.visualize.plot_frontier_with_cml">plot_frontier_with_cml() (in module qpfolio.core.visualize)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_reference.html#qpfolio.core.visualize.plot_risk_contributions">plot_risk_contributions() (in module qpfolio.core.visualize)</a>
+</li>
+        <li><a href="api_reference.html#qpfolio.core.visualize.plot_weights_along_frontier">plot_weights_along_frontier() (in module qpfolio.core.visualize)</a>
+</li>
         <li><a href="api_reference.html#qpfolio.core.types.ProblemSpec">ProblemSpec (class in qpfolio.core.types)</a>
 </li>
     </ul></td>
@@ -456,6 +482,16 @@
   </tr></table>
 </section>
 
+<section id="R" class="genindex-section">
+  <h2>R</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_reference.html#qpfolio.core.metrics.risk_contributions">risk_contributions() (in module qpfolio.core.metrics)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
 <section id="S" class="genindex-section">
   <h2>S</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
@@ -481,6 +517,20 @@
         <li><a href="api_reference.html#qpfolio.solvers.base.Solver">Solver (class in qpfolio.solvers.base)</a>
 </li>
         <li><a href="api_reference.html#qpfolio.core.types.Solution.status">status (qpfolio.core.types.Solution attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_reference.html#qpfolio.core.metrics.tracking_error">tracking_error() (in module qpfolio.core.metrics)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_reference.html#qpfolio.core.metrics.turnover">turnover() (in module qpfolio.core.metrics)</a>
 </li>
     </ul></td>
   </tr></table>

@@ -194,6 +194,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reporting.html">Reporting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../about.html">About QPFolio</a></li>
@@ -263,6 +265,75 @@
     <span class="n">num</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">sigmas</span><span class="p">)</span>
     <span class="n">den</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">Sigma</span> <span class="o">@</span> <span class="n">w</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
     <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">den</span> <span class="k">if</span> <span class="n">den</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="risk_contributions">
+<a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.metrics.risk_contributions">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">risk_contributions</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">):</span>
+    <span class="n">mrc</span> <span class="o">=</span> <span class="n">Sigma</span> <span class="o">@</span> <span class="n">w</span>  <span class="c1"># marginal risk contribution</span>
+    <span class="n">trc</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">mrc</span>  <span class="c1"># total risk contribution</span>
+    <span class="n">port_sigma</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">Sigma</span> <span class="o">@</span> <span class="n">w</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;mrc&quot;</span><span class="p">:</span> <span class="n">mrc</span><span class="p">,</span> <span class="s2">&quot;trc&quot;</span><span class="p">:</span> <span class="n">trc</span><span class="p">,</span> <span class="s2">&quot;trc_frac&quot;</span><span class="p">:</span> <span class="n">trc</span> <span class="o">/</span> <span class="p">(</span><span class="n">port_sigma</span> <span class="k">if</span> <span class="n">port_sigma</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span><span class="p">)}</span></div>
+
+
+
+<div class="viewcode-block" id="tracking_error">
+<a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.metrics.tracking_error">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tracking_error</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">w_ref</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">w_ref</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">((</span><span class="n">d</span> <span class="o">@</span> <span class="n">Sigma</span> <span class="o">@</span> <span class="n">d</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="beta_to_benchmark">
+<a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.metrics.beta_to_benchmark">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">beta_to_benchmark</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">,</span> <span class="n">w_mkt</span><span class="p">):</span>
+    <span class="n">cov</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span> <span class="o">@</span> <span class="n">Sigma</span> <span class="o">@</span> <span class="n">w_mkt</span><span class="p">)</span>
+    <span class="n">var_mkt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">w_mkt</span> <span class="o">@</span> <span class="n">Sigma</span> <span class="o">@</span> <span class="n">w_mkt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cov</span> <span class="o">/</span> <span class="n">var_mkt</span> <span class="k">if</span> <span class="n">var_mkt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="information_ratio">
+<a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.metrics.information_ratio">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">information_ratio</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">w_ref</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">):</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">w</span> <span class="o">-</span> <span class="n">w_ref</span><span class="p">)</span> <span class="o">@</span> <span class="n">mu</span><span class="p">)</span>
+    <span class="n">te</span> <span class="o">=</span> <span class="n">tracking_error</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">w_ref</span><span class="p">,</span> <span class="n">Sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ar</span> <span class="o">/</span> <span class="n">te</span> <span class="k">if</span> <span class="n">te</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="turnover">
+<a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.metrics.turnover">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">turnover</span><span class="p">(</span><span class="n">w_old</span><span class="p">,</span> <span class="n">w_new</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">w_new</span> <span class="o">-</span> <span class="n">w_old</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="frontier_to_frame">
+<a class="viewcode-back" href="../../../api_reference.html#qpfolio.core.metrics.frontier_to_frame">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">frontier_to_frame</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">asset_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>  <span class="c1"># local import to keep core deps light</span>
+
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">risk</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">sol</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+            <span class="s2">&quot;risk&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">risk</span><span class="p">),</span>
+            <span class="s2">&quot;return&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ret</span><span class="p">),</span>
+            <span class="s2">&quot;obj&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">obj_value</span><span class="p">),</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">sol</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">asset_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">xj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">):</span>
+                <span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;w_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">xj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">xj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">asset_labels</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">):</span>
+                <span class="n">row</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;w_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">xj</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;idx&quot;</span><span class="p">)</span></div>
+
 
 </pre></div>
         </article>

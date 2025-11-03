@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Contributing" href="contributing.html"><link rel="prev" title="Usage" href="usage.html">
+<link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Visualization" href="visualization.html"><link rel="prev" title="Usage" href="usage.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>API Reference - qpfolio 0.1.0a0 documentation</title>
@@ -195,6 +195,8 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reporting.html">Reporting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About QPFolio</a></li>
@@ -306,7 +308,7 @@
 
 <dl class="py function" id="module-qpfolio.core.frontier">
 <dt class="sig sig-object py" id="qpfolio.core.frontier.compute_frontier">
-<span class="sig-prename descclassname"><span class="pre">qpfolio.core.frontier.</span></span><span class="sig-name descname"><span class="pre">compute_frontier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/frontier.html#compute_frontier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.frontier.compute_frontier" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.frontier.</span></span><span class="sig-name descname"><span class="pre">compute_frontier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/frontier.html#compute_frontier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.frontier.compute_frontier" title="Link to this definition">¶</a></dt>
 <dd><p>Return list of (risk, ret, solution) along frontier.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -316,6 +318,11 @@
 </dd></dl>
 
 <dl class="py function" id="module-qpfolio.core.metrics">
+<dt class="sig sig-object py" id="qpfolio.core.metrics.beta_to_benchmark">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.metrics.</span></span><span class="sig-name descname"><span class="pre">beta_to_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_mkt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/metrics.html#beta_to_benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.metrics.beta_to_benchmark" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="qpfolio.core.metrics.diversification_ratio">
 <span class="sig-prename descclassname"><span class="pre">qpfolio.core.metrics.</span></span><span class="sig-name descname"><span class="pre">diversification_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/metrics.html#diversification_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.metrics.diversification_ratio" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -336,6 +343,21 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="qpfolio.core.metrics.frontier_to_frame">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.metrics.</span></span><span class="sig-name descname"><span class="pre">frontier_to_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/metrics.html#frontier_to_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.metrics.frontier_to_frame" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qpfolio.core.metrics.information_ratio">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.metrics.</span></span><span class="sig-name descname"><span class="pre">information_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/metrics.html#information_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.metrics.information_ratio" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qpfolio.core.metrics.risk_contributions">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.metrics.</span></span><span class="sig-name descname"><span class="pre">risk_contributions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/metrics.html#risk_contributions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.metrics.risk_contributions" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="qpfolio.core.metrics.sharpe">
 <span class="sig-prename descclassname"><span class="pre">qpfolio.core.metrics.</span></span><span class="sig-name descname"><span class="pre">sharpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/metrics.html#sharpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.metrics.sharpe" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -344,6 +366,16 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qpfolio.core.metrics.tracking_error">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.metrics.</span></span><span class="sig-name descname"><span class="pre">tracking_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/metrics.html#tracking_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.metrics.tracking_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qpfolio.core.metrics.turnover">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.metrics.</span></span><span class="sig-name descname"><span class="pre">turnover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w_new</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/metrics.html#turnover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.metrics.turnover" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="qpfolio.core.metrics.variance">
@@ -356,9 +388,53 @@
 </dd></dl>
 
 <dl class="py function" id="module-qpfolio.core.visualize">
+<dt class="sig sig-object py" id="qpfolio.core.visualize.plot_corr_heatmap">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_corr_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/visualize.html#plot_corr_heatmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.visualize.plot_corr_heatmap" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="qpfolio.core.visualize.plot_frontier">
-<span class="sig-prename descclassname"><span class="pre">qpfolio.core.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_frontier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/visualize.html#plot_frontier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.visualize.plot_frontier" title="Link to this definition">¶</a></dt>
-<dd><p>Plot (risk, return) pairs.</p>
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_frontier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/visualize.html#plot_frontier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.visualize.plot_frontier" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qpfolio.core.visualize.plot_frontier_with_cml">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_frontier_with_cml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">rf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/visualize.html#plot_frontier_with_cml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.visualize.plot_frontier_with_cml" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qpfolio.core.visualize.plot_risk_contributions">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_risk_contributions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/visualize.html#plot_risk_contributions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.visualize.plot_risk_contributions" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qpfolio.core.visualize.plot_weights_along_frontier">
+<span class="sig-prename descclassname"><span class="pre">qpfolio.core.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_weights_along_frontier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/core/visualize.html#plot_weights_along_frontier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.core.visualize.plot_weights_along_frontier" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -400,10 +476,16 @@
 
 <dl class="py class" id="module-qpfolio.solvers.mathopt_osqp">
 <dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qpfolio.solvers.mathopt_osqp.</span></span><span class="sig-name descname"><span class="pre">MathOptOSQP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/solvers/mathopt_osqp.html#MathOptOSQP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qpfolio.solvers.mathopt_osqp.</span></span><span class="sig-name descname"><span class="pre">MathOptOSQP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/solvers/mathopt_osqp.html#MathOptOSQP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qpfolio.solvers.base.Solver" title="qpfolio.solvers.base.Solver"><code class="xref py py-class docutils literal notranslate"><span class="pre">Solver</span></code></a></p>
-<p>Placeholder OR-Tools MathOpt + OSQP adapter.
-Replace ‘NotImplementedError’ with the actual MathOpt model build.</p>
+<p>OSQP-backed solver implementing the generic Solver interface.</p>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Uses the native OSQP Python API internally.
+You can later swap internals to OR-Tools MathOpt+OSQP without changing this class.</p></li>
+<li><p>Default tolerances are tightened for small portfolio problems; callers can override
+via keyword options (e.g., MathOptOSQP(eps_abs=1e-5, eps_rel=1e-5)).</p></li>
+</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="qpfolio.solvers.mathopt_osqp.MathOptOSQP.solve">
 <span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qpfolio/solvers/mathopt_osqp.html#MathOptOSQP.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qpfolio.solvers.mathopt_osqp.MathOptOSQP.solve" title="Link to this definition">¶</a></dt>
@@ -506,12 +588,12 @@ Replace ‘NotImplementedError’ with the actual MathOpt model build.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="contributing.html">
+          <a class="next-page" href="visualization.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Contributing</div>
+                <div class="title">Visualization</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -564,11 +646,21 @@ Replace ‘NotImplementedError’ with the actual MathOpt model build.</p>
 <li><a class="reference internal" href="#qpfolio.core.models.build_mdp_problem"><code class="docutils literal notranslate"><span class="pre">build_mdp_problem()</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.models.build_mvo_problem"><code class="docutils literal notranslate"><span class="pre">build_mvo_problem()</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.frontier.compute_frontier"><code class="docutils literal notranslate"><span class="pre">compute_frontier()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.metrics.beta_to_benchmark"><code class="docutils literal notranslate"><span class="pre">beta_to_benchmark()</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.metrics.diversification_ratio"><code class="docutils literal notranslate"><span class="pre">diversification_ratio()</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.metrics.expected_return"><code class="docutils literal notranslate"><span class="pre">expected_return()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.metrics.frontier_to_frame"><code class="docutils literal notranslate"><span class="pre">frontier_to_frame()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.metrics.information_ratio"><code class="docutils literal notranslate"><span class="pre">information_ratio()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.metrics.risk_contributions"><code class="docutils literal notranslate"><span class="pre">risk_contributions()</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.metrics.sharpe"><code class="docutils literal notranslate"><span class="pre">sharpe()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.metrics.tracking_error"><code class="docutils literal notranslate"><span class="pre">tracking_error()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.metrics.turnover"><code class="docutils literal notranslate"><span class="pre">turnover()</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.metrics.variance"><code class="docutils literal notranslate"><span class="pre">variance()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.visualize.plot_corr_heatmap"><code class="docutils literal notranslate"><span class="pre">plot_corr_heatmap()</span></code></a></li>
 <li><a class="reference internal" href="#qpfolio.core.visualize.plot_frontier"><code class="docutils literal notranslate"><span class="pre">plot_frontier()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.visualize.plot_frontier_with_cml"><code class="docutils literal notranslate"><span class="pre">plot_frontier_with_cml()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.visualize.plot_risk_contributions"><code class="docutils literal notranslate"><span class="pre">plot_risk_contributions()</span></code></a></li>
+<li><a class="reference internal" href="#qpfolio.core.visualize.plot_weights_along_frontier"><code class="docutils literal notranslate"><span class="pre">plot_weights_along_frontier()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-qpfolio.solvers.base">Solver Interfaces</a><ul>
