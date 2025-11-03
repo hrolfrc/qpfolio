@@ -148,6 +148,7 @@ Project Information
    :caption: Contents
 
    installation
+   introduction
    usage
    api_reference
    visualization

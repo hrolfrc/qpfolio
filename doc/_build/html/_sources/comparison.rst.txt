@@ -28,12 +28,6 @@ Example Figures
    :alt: DRO Frontier
    :width: 75%
 
-.. image:: _static/artifacts/v2/comparison_frontiers.png
-   :alt: MVO vs DRO frontiers and MDP point
-   :width: 80%
-   :align: center
-
-
 Key Takeaways
 -------------
 - **MVO** achieves the best frontier under precise estimates but is brittle.

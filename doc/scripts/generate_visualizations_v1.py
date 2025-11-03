@@ -28,7 +28,6 @@ from qpfolio.solvers.mathopt_osqp import MathOptOSQP
 
 
 OUTDIR = Path("../_static/artifacts/v1")
-# OUTDIR = Path("_static/artifacts/v1")
 
 @dataclass(frozen=True)
 class RunConfig:
