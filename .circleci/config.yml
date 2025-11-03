@@ -1,10 +1,36 @@
-# .circleci/config.yml (append to your current file)
+# .circleci/config.yml
 version: 2.1
 
 orbs:
   python: circleci/python@3.3.0
 
 jobs:
+  lint_and_test:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+      - run:
+          name: Upgrade pip
+          command: python -m pip install --upgrade pip
+      - run:
+          name: Install package with dev extras
+          command: pip install -e ".[dev]"
+      - run:
+          name: Run linters
+          command: |
+            ruff --version
+            ruff check .
+      - run:
+          name: Run tests with coverage
+          command: |
+            pytest -v --cov=qpfolio --cov-report=term-missing --cov-report=xml
+      - store_artifacts:
+          path: coverage.xml
+      - store_test_results:
+          path: test-results
+          when: always
+
   publish_pypi:
     docker:
       - image: cimg/python:3.11
@@ -38,7 +64,7 @@ workflows:
     when: on_tag
     jobs:
       - publish_pypi:
-          context: pypi  # define a CircleCI context that contains PYPI_TOKEN
+          context: pypi   # CircleCI context that contains PYPI_TOKEN
           filters:
             tags:
               only: /^v.*/

@@ -250,37 +250,83 @@
         <article role="main" id="furo-main-content">
           <section id="visualization">
 <h1>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">¶</a></h1>
-<section id="efficient-frontier-real">
-<h2>Efficient Frontier (Real)<a class="headerlink" href="#efficient-frontier-real" title="Link to this heading">¶</a></h2>
-<a class="reference internal image-reference" href="_images/frontier.png"><img alt="Efficient Frontier" class="align-center" src="_images/frontier.png" style="width: 720px;" />
+<p>This page shows the core visuals produced by a real OSQP-backed run.</p>
+<section id="data-generation-gbm">
+<h2>Data Generation (GBM)<a class="headerlink" href="#data-generation-gbm" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/gbm_prices.png"><img alt="Simulated GBM price paths" src="_images/gbm_prices.png" style="width: 85%;" />
 </a>
-<a class="reference internal image-reference" href="_images/dro_frontier.png"><img alt="DRO frontier (Σ + γI)" class="align-center" src="_images/dro_frontier.png" style="width: 70%;" />
+<figcaption>
+<p><span class="caption-text">Simulated GBM price trajectories for five assets over one year.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/gbm_returns.png"><img alt="GBM log returns (annualized)" src="_images/gbm_returns.png" style="width: 85%;" />
 </a>
-<a class="reference internal image-reference" href="_images/mdp_point.png"><img alt="MDP point (closed-form)" class="align-center" src="_images/mdp_point.png" style="width: 50%;" />
-</a>
+<figcaption>
+<p><span class="caption-text">Log returns derived from GBM prices (shown annualized for visual scale).</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 </section>
-<section id="efficient-frontier-capital-market-line">
-<h2>Efficient Frontier + Capital Market Line<a class="headerlink" href="#efficient-frontier-capital-market-line" title="Link to this heading">¶</a></h2>
-<a class="reference internal image-reference" href="_images/frontier.png"><img alt="Efficient Frontier (CML drawn by code sample)" class="align-center" src="_images/frontier.png" style="width: 720px;" />
+<section id="efficient-frontier-capital-market-line-mvo">
+<h2>Efficient Frontier + Capital Market Line (MVO)<a class="headerlink" href="#efficient-frontier-capital-market-line-mvo" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="_images/mvo_frontier.png"><img alt="MVO Efficient Frontier with Capital Market Line" src="_images/mvo_frontier.png" style="width: 80%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Efficient frontier under MVO with the Capital Market Line (CML) and tangency portfolio.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 </section>
-<section id="weights-along-the-frontier-real">
-<h2>Weights Along the Frontier (Real)<a class="headerlink" href="#weights-along-the-frontier-real" title="Link to this heading">¶</a></h2>
-<a class="reference internal image-reference" href="_images/weights.png"><img alt="Weights Along the Frontier" class="align-center" src="_images/weights.png" style="width: 720px;" />
+<section id="weights-along-the-frontier-mvo">
+<h2>Weights Along the Frontier (MVO)<a class="headerlink" href="#weights-along-the-frontier-mvo" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="_images/mvo_weights.png"><img alt="Portfolio weights along the efficient frontier" src="_images/mvo_weights.png" style="width: 80%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Stacked weights as the target return increases (left → right). Higher-return frontier points tend to overweight higher-risk assets.</span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 </section>
-<section id="risk-contributions-real">
-<h2>Risk Contributions (Real)<a class="headerlink" href="#risk-contributions-real" title="Link to this heading">¶</a></h2>
-<a class="reference internal image-reference" href="_images/risk_contrib.png"><img alt="Risk Contributions (mid frontier)" class="align-center" src="_images/risk_contrib.png" style="width: 720px;" />
+<section id="risk-contributions-mvo-mid-frontier">
+<h2>Risk Contributions (MVO, mid frontier)<a class="headerlink" href="#risk-contributions-mvo-mid-frontier" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="_images/mvo_risk.png"><img alt="Risk contributions at a representative frontier point" src="_images/mvo_risk.png" style="width: 70%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Each bar shows the contribution of an asset to total portfolio risk at a mid-frontier portfolio.</span><a class="headerlink" href="#id5" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 </section>
-<section id="how-to-generate-these-artifacts">
-<h2>How to generate these artifacts<a class="headerlink" href="#how-to-generate-these-artifacts" title="Link to this heading">¶</a></h2>
-<p>We generate these files with a real qpfolio run (OSQP-backed) via:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>docs-artifacts
-</pre></div>
-</div>
-<p>See <code class="docutils literal notranslate"><span class="pre">scripts/generate_docs_artifacts.py</span></code> for the exact steps and parameters.</p>
+<section id="correlation-heatmap">
+<h2>Correlation Heatmap<a class="headerlink" href="#correlation-heatmap" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="_images/corr.png"><img alt="Correlation heatmap of asset returns" src="_images/corr.png" style="width: 55%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Pairwise correlations estimated from the simulated returns.</span><a class="headerlink" href="#id6" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="dro-frontier-i">
+<h2>DRO Frontier (Σ + γI)<a class="headerlink" href="#dro-frontier-i" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id7">
+<a class="reference internal image-reference" href="_images/dro_frontier.png"><img alt="DRO frontier (Σ + γI)" src="_images/dro_frontier.png" style="width: 75%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Distributionally robust frontier using Σ′ = Σ + γI (γ controls robustness level).</span><a class="headerlink" href="#id7" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="mdp-most-diversified-portfolio">
+<h2>MDP (Most Diversified Portfolio)<a class="headerlink" href="#mdp-most-diversified-portfolio" title="Link to this heading">¶</a></h2>
+<figure class="align-center" id="id8">
+<a class="reference internal image-reference" href="_images/mdp_point.png"><img alt="MDP point (closed-form)" src="_images/mdp_point.png" style="width: 50%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The MDP is shown as a single portfolio (closed-form approximation) rather than a frontier.</span><a class="headerlink" href="#id8" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 </section>
 </section>
 
@@ -340,11 +386,13 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Visualization</a><ul>
-<li><a class="reference internal" href="#efficient-frontier-real">Efficient Frontier (Real)</a></li>
-<li><a class="reference internal" href="#efficient-frontier-capital-market-line">Efficient Frontier + Capital Market Line</a></li>
-<li><a class="reference internal" href="#weights-along-the-frontier-real">Weights Along the Frontier (Real)</a></li>
-<li><a class="reference internal" href="#risk-contributions-real">Risk Contributions (Real)</a></li>
-<li><a class="reference internal" href="#how-to-generate-these-artifacts">How to generate these artifacts</a></li>
+<li><a class="reference internal" href="#data-generation-gbm">Data Generation (GBM)</a></li>
+<li><a class="reference internal" href="#efficient-frontier-capital-market-line-mvo">Efficient Frontier + Capital Market Line (MVO)</a></li>
+<li><a class="reference internal" href="#weights-along-the-frontier-mvo">Weights Along the Frontier (MVO)</a></li>
+<li><a class="reference internal" href="#risk-contributions-mvo-mid-frontier">Risk Contributions (MVO, mid frontier)</a></li>
+<li><a class="reference internal" href="#correlation-heatmap">Correlation Heatmap</a></li>
+<li><a class="reference internal" href="#dro-frontier-i">DRO Frontier (Σ + γI)</a></li>
+<li><a class="reference internal" href="#mdp-most-diversified-portfolio">MDP (Most Diversified Portfolio)</a></li>
 </ul>
 </li>
 </ul>

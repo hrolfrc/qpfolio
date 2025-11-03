@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="End-to-End Example: Portfolio Workflow" href="example_portfolio_workflow.html"><link rel="prev" title="Visualization" href="visualization.html">
+<link rel="author" title="About these documents" href="about.html"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Usage" href="usage.html"><link rel="prev" title="Installation" href="installation.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Method Comparison - qpfolio 0.1.0a0 documentation</title>
+        <title>Introduction to Quadratic Portfolio Optimization - qpfolio 0.1.0a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -193,12 +193,12 @@
   <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Quadratic Portfolio Optimization</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="usage.html">Usage</a><input aria-label="Toggle navigation of Usage" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Introduction to Quadratic Portfolio Optimization</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="usage.html">Usage</a><input aria-label="Toggle navigation of Usage" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="methods.html">Methods: Mathematical Formulations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_generation.html">Data Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html">Visualization</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Method Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Method Comparison</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_portfolio_workflow.html">End-to-End Example: Portfolio Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 </ul>
@@ -230,7 +230,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/comparison.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/introduction.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -248,40 +248,61 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="method-comparison">
-<h1>Method Comparison<a class="headerlink" href="#method-comparison" title="Link to this heading">¶</a></h1>
-<section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>Synthetic 5-asset universe (GBM-derived log returns).</p></li>
-<li><p>Annualized estimates <span class="math notranslate nohighlight">\((\hat{\mu}, \hat{\Sigma})\)</span>.</p></li>
-<li><p>Long-only, fully invested.</p></li>
-</ul>
+          <section id="introduction-to-quadratic-portfolio-optimization">
+<h1>Introduction to Quadratic Portfolio Optimization<a class="headerlink" href="#introduction-to-quadratic-portfolio-optimization" title="Link to this heading">¶</a></h1>
+<section id="why-quadratic">
+<h2>Why Quadratic?<a class="headerlink" href="#why-quadratic" title="Link to this heading">¶</a></h2>
+<p>Variance is quadratic in portfolio weights: <span class="math notranslate nohighlight">\(\sigma_p^2 = w^\top \Sigma w\)</span>.
+This makes problems like mean–variance optimization convex and efficiently solvable with QP solvers (e.g., OSQP).</p>
 </section>
-<section id="what-we-compare">
-<h2>What We Compare<a class="headerlink" href="#what-we-compare" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><strong>MVO</strong> frontier (risk vs return), with CML and tangency point.</p></li>
-<li><p><strong>DRO</strong> frontier (using <span class="math notranslate nohighlight">\(\Sigma' = \Sigma + \gamma I\)</span>).</p></li>
-<li><p><strong>MDP</strong> as a single portfolio (closed-form point; not a frontier).</p></li>
-</ul>
+<section id="core-concepts-glossary">
+<h2>Core Concepts (Glossary)<a class="headerlink" href="#core-concepts-glossary" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><strong>Return (Expected)</strong> (<span class="math notranslate nohighlight">\(\mu\)</span>):</dt><dd><p>Average expected return per asset (annualized here).</p>
+</dd>
+<dt><strong>Covariance Matrix</strong> (<span class="math notranslate nohighlight">\(\Sigma\)</span>):</dt><dd><p>Second-moment structure of returns. Diagonals are variances, off-diagonals encode co-movements.</p>
+</dd>
+<dt><strong>Volatility</strong> (<span class="math notranslate nohighlight">\(\sigma\)</span>):</dt><dd><p>Standard deviation of returns. For asset <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(\sigma_i = \sqrt{\Sigma_{ii}}\)</span>.</p>
+</dd>
+<dt><strong>Correlation</strong>:</dt><dd><p>Normalized covariance in <span class="math notranslate nohighlight">\([-1, 1]\)</span>. High correlation reduces diversification benefits.</p>
+</dd>
+<dt><strong>Efficient Frontier</strong>:</dt><dd><p>The set of portfolios with minimum variance for a given expected return.</p>
+</dd>
+<dt><strong>Capital Market Line (CML)</strong>:</dt><dd><p>Line from the risk-free rate tangent to the efficient frontier. The tangency portfolio maximizes Sharpe ratio.</p>
+</dd>
+<dt><strong>Sharpe Ratio</strong>:</dt><dd><p><span class="math notranslate nohighlight">\((\mu_p - R_f) / \sigma_p\)</span>. Return per unit of risk.</p>
+</dd>
+<dt><strong>Risk Contribution (RC)</strong>:</dt><dd><p>Asset <span class="math notranslate nohighlight">\(i\)</span>’s contribution to total risk: <span class="math notranslate nohighlight">\(\mathrm{RC}_i = \frac{w_i (\Sigma w)_i}{\sigma_p}\)</span>.</p>
+</dd>
+<dt><strong>Most Diversified Portfolio (MDP)</strong>:</dt><dd><p>Portfolio that maximizes the diversification ratio. Closed-form (ignoring long-only constraints): <span class="math notranslate nohighlight">\(w \propto \Sigma^{-1}\sigma\)</span>.</p>
+</dd>
+<dt><strong>DRO (Distributionally Robust Optimization)</strong>:</dt><dd><p>Robustification technique that guards against estimation/model error. A simple convex surrogate is <span class="math notranslate nohighlight">\(\Sigma' = \Sigma + \Gamma\)</span> with <span class="math notranslate nohighlight">\(\Gamma \succeq 0\)</span>.</p>
+</dd>
+</dl>
 </section>
-<section id="comparison-figure">
-<h2>Comparison Figure<a class="headerlink" href="#comparison-figure" title="Link to this heading">¶</a></h2>
-<figure class="align-center" id="id1">
-<a class="reference internal image-reference" href="_images/comparison_frontiers.png"><img alt="MVO vs DRO frontiers with MDP point" src="_images/comparison_frontiers.png" style="width: 85%;" />
-</a>
-<figcaption>
-<p><span class="caption-text">MVO and DRO frontiers contrasted. MDP appears as a single point.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
+<section id="how-to-read-the-plots">
+<h2>How to Read the Plots<a class="headerlink" href="#how-to-read-the-plots" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><strong>Efficient Frontier</strong>:</dt><dd><p>Points on the curve are optimal risk–return trade-offs. The leftmost point is minimum-variance.</p>
+</dd>
+<dt><strong>CML + Tangency Point</strong>:</dt><dd><p>The CML dominates portfolios below it; the tangent is the max-Sharpe risky portfolio.</p>
+</dd>
+<dt><strong>Weights Along Frontier</strong>:</dt><dd><p>Stacked areas show how allocations evolve as target return (and risk) rises.</p>
+</dd>
+<dt><strong>Risk Contributions</strong>:</dt><dd><p>Bars reveal which assets dominate total portfolio risk. Balanced contributions indicate better diversification.</p>
+</dd>
+<dt><strong>Correlation Heatmap</strong>:</dt><dd><p>Visualizes dependencies. Lower correlations (cool colors) improve diversification.</p>
+</dd>
+</dl>
 </section>
-<section id="key-takeaways">
-<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading">¶</a></h2>
+<section id="where-to-next">
+<h2>Where to Next<a class="headerlink" href="#where-to-next" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>MVO</strong> achieves the best frontier under precise estimates but can be brittle to estimation error.</p></li>
-<li><p><strong>DRO</strong> generally shifts the frontier downward but can reduce sensitivity to misspecification; <span class="math notranslate nohighlight">\(\gamma\)</span> controls robustness.</p></li>
-<li><p><strong>MDP</strong> tends to produce smoother, more diversified exposures; here we present the standard closed-form solution as a single point.</p></li>
+<li><p><a class="reference internal" href="methods.html"><span class="doc">Methods: Mathematical Formulations</span></a></p></li>
+<li><p><a class="reference internal" href="data_generation.html"><span class="doc">Data Generation</span></a></p></li>
+<li><p><a class="reference internal" href="visualization.html"><span class="doc">Visualization</span></a></p></li>
+<li><p><a class="reference internal" href="comparison.html"><span class="doc">Method Comparison</span></a></p></li>
+<li><p><a class="reference internal" href="example_portfolio_workflow.html"><span class="doc">End-to-End Example: Portfolio Workflow</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -291,23 +312,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="example_portfolio_workflow.html">
+          <a class="next-page" href="usage.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">End-to-End Example: Portfolio Workflow</div>
+                <div class="title">Usage</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="visualization.html">
+          <a class="prev-page" href="installation.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Visualization</div>
+                <div class="title">Installation</div>
                 
               </div>
             </a>
@@ -341,11 +362,11 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Method Comparison</a><ul>
-<li><a class="reference internal" href="#setup">Setup</a></li>
-<li><a class="reference internal" href="#what-we-compare">What We Compare</a></li>
-<li><a class="reference internal" href="#comparison-figure">Comparison Figure</a></li>
-<li><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li><a class="reference internal" href="#">Introduction to Quadratic Portfolio Optimization</a><ul>
+<li><a class="reference internal" href="#why-quadratic">Why Quadratic?</a></li>
+<li><a class="reference internal" href="#core-concepts-glossary">Core Concepts (Glossary)</a></li>
+<li><a class="reference internal" href="#how-to-read-the-plots">How to Read the Plots</a></li>
+<li><a class="reference internal" href="#where-to-next">Where to Next</a></li>
 </ul>
 </li>
 </ul>
