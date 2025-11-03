@@ -2,7 +2,6 @@ Visualization
 =============
 
 This page shows the core visuals produced by a real OSQP-backed run.
-All files are pre-generated and committed so Read the Docs can display them deterministically.
 
 Data Generation (GBM)
 ---------------------
@@ -80,15 +79,3 @@ MDP (Most Diversified Portfolio)
    :width: 50%
 
    The MDP is shown as a single portfolio (closed-form approximation) rather than a frontier.
-
-How to Re-generate These Artifacts (local)
-------------------------------------------
-
-.. code-block:: bash
-
-   # from repository root
-   PYTHONPATH=. python doc/scripts/generate_visualizations_v1.py --seed 42
-   PYTHONPATH=. python doc/scripts/generate_visualizations_v2.py --seed 42 --gamma 0.15
-
-The v1 script produces GBM visuals; the v2 script produces the MVO/DRO/MDP visuals.
-Commit the resulting ``doc/_static/artifacts/v1`` and ``v2`` folders so RTD can display them.

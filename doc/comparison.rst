@@ -23,19 +23,6 @@ Comparison Figure
 
    MVO and DRO frontiers contrasted. MDP appears as a single point.
 
-Per-Method Figures (Optional)
------------------------------
-
-.. figure:: _static/artifacts/v2/dro_frontier.png
-   :alt: DRO frontier (Σ + γ I)
-   :width: 70%
-   :align: center
-
-.. figure:: _static/artifacts/v2/mdp_point.png
-   :alt: Most Diversified Portfolio (point)
-   :width: 55%
-   :align: center
-
 Key Takeaways
 -------------
 - **MVO** achieves the best frontier under precise estimates but can be brittle to estimation error.
