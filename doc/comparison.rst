@@ -3,55 +3,41 @@ Method Comparison
 
 Setup
 -----
-- Synthetic 5-asset universe (MVN or GBM-derived log returns).
+- Synthetic 5-asset universe (GBM-derived log returns).
 - Annualized estimates :math:`(\hat{\mu}, \hat{\Sigma})`.
 - Long-only, fully invested.
 
 What We Compare
 ---------------
-- Efficient frontiers (risk vs return).
-- Weights along the frontier.
-- Risk contributions at representative points.
-- (Optional) Robustness sweep: vary :math:`\Gamma` in DRO.
+- **MVO** frontier (risk vs return), with CML and tangency point.
+- **DRO** frontier (using :math:`\Sigma' = \Sigma + \gamma I`).
+- **MDP** as a single portfolio (closed-form point; not a frontier).
 
-Example Figures
----------------
-.. image:: _static/artifacts/v1/mvo_frontier.png
-   :alt: MVO Frontier
-   :width: 75%
+Comparison Figure
+-----------------
 
-.. image:: _static/artifacts/v1/mdp_frontier.png
-   :alt: MDP Frontier
-   :width: 75%
-
-.. image:: _static/artifacts/v1/dro_frontier.png
-   :alt: DRO Frontier
-   :width: 75%
-
-.. image:: _static/artifacts/v2/comparison_frontiers.png
-   :alt: MVO vs DRO frontiers and MDP point
-   :width: 80%
-   :align: center
-
-
-.. image:: _static/artifacts/v2/comparison_frontiers.png
+.. figure:: _static/artifacts/v2/comparison_frontiers.png
    :alt: MVO vs DRO frontiers with MDP point
    :width: 85%
    :align: center
 
-.. image:: _static/artifacts/v2/dro_frontier.png
+   MVO and DRO frontiers contrasted. MDP appears as a single point.
+
+Per-Method Figures (Optional)
+-----------------------------
+
+.. figure:: _static/artifacts/v2/dro_frontier.png
    :alt: DRO frontier (Σ + γ I)
    :width: 70%
    :align: center
 
-.. image:: _static/artifacts/v2/mdp_point.png
+.. figure:: _static/artifacts/v2/mdp_point.png
    :alt: Most Diversified Portfolio (point)
    :width: 55%
    :align: center
 
-
 Key Takeaways
 -------------
-- **MVO** achieves the best frontier under precise estimates but is brittle.
-- **MDP** diversifies exposures—weights vary more smoothly with target return.
-- **DRO** shifts the frontier downward but reduces sensitivity to estimation error.
+- **MVO** achieves the best frontier under precise estimates but can be brittle to estimation error.
+- **DRO** generally shifts the frontier downward but can reduce sensitivity to misspecification; :math:`\gamma` controls robustness.
+- **MDP** tends to produce smoother, more diversified exposures; here we present the standard closed-form solution as a single point.
