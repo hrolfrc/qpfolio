@@ -4,19 +4,20 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import asdict, dataclass
-from pathlib import Path
 from datetime import datetime, UTC
+from pathlib import Path
 
+import matplotlib  # keep all imports at top; set backend before importing pyplot
 import numpy as np
 import pandas as pd
-import matplotlib  # keep all imports at top; set backend before importing pyplot
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from qpfolio.simulation.gbm import simulate_prices_and_returns
 from qpfolio.core.estimates import sample_mean_cov
 from qpfolio.core.frontier import compute_frontier
-from qpfolio.core.metrics import frontier_to_frame, risk_contributions
+from qpfolio.core.metrics import frontier_to_frame
 from qpfolio.core.visualize import (
     plot_frontier_with_cml,
     plot_weights_along_frontier,
