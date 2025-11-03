@@ -1,75 +1,108 @@
-from typing import TYPE_CHECKING, Iterable, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Iterable, Optional, Sequence
 import numpy as np
 import matplotlib.pyplot as plt
 
-if TYPE_CHECKING:  # avoid RTD import errors without adding pandas as a hard dep
+if TYPE_CHECKING:  # avoid hard pandas dep at import time
     import pandas as pd
 
 
-def plot_frontier(points: Iterable[tuple[float, float, object]], *, ax=None,
-                  show_tangent: bool = False, rf: float = 0.0):
-    """Plot (risk, return) frontier. Optionally draw CML (tangent) from rf."""
+def plot_frontier(points: Iterable[tuple[float, float, object]], *, ax=None):
+    """
+    Plot (risk, return) efficient frontier.
+    points: iterable of (risk, return, solution)
+    Returns matplotlib Axes.
+    """
     if ax is None:
         _, ax = plt.subplots()
 
-    xs = [p[0] for p in points]
-    ys = [p[1] for p in points]
-    ax.plot(xs, ys, marker="o", linewidth=1.5)
+    risks = [float(p[0]) for p in points]
+    rets = [float(p[1]) for p in points]
+    ax.plot(risks, rets, marker="o", linewidth=1.5)
     ax.set_xlabel("Risk (stdev)")
     ax.set_ylabel("Expected Return")
     ax.set_title("Efficient Frontier")
     ax.grid(True)
-
-    if show_tangent and xs:
-        vols = np.asarray(xs, dtype=float)
-        rets = np.asarray(ys, dtype=float)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            sharpe = (rets - rf) / vols
-        i = int(np.nanargmax(sharpe))
-        ax.plot([0.0, vols[i]], [rf, rets[i]], linestyle="--")
     return ax
 
 
-def plot_weights_along_frontier(weights: "pd.DataFrame", *, ax=None):
-    """Stacked area chart of weights across frontier index."""
+def plot_frontier_with_cml(points: Iterable[tuple[float, float, object]], *, rf: float = 0.0, ax=None):
+    """
+    Plot frontier and Capital Market Line (tangent from risk-free rate).
+    Returns matplotlib Axes.
+    """
     if ax is None:
         _, ax = plt.subplots()
 
-    # index along x, columns as assets
-    x = range(len(weights))
-    ax.stackplot(x, weights.values.T)
-    ax.set_xlabel("Frontier Index")
-    ax.set_ylabel("Weight")
-    ax.set_title("Weights Along Frontier")
-    ax.set_ylim(0.0, 1.0)
-    ax.legend(list(weights.columns), loc="best")
+    risks = np.asarray([float(p[0]) for p in points], dtype=float)
+    rets = np.asarray([float(p[1]) for p in points], dtype=float)
+    ax.plot(risks, rets, marker="o", linewidth=1.5, label="Frontier")
+
+    # CML: pick max Sharpe point
+    with np.errstate(divide="ignore", invalid="ignore"):
+        sharpe = (rets - rf) / risks
+    i = int(np.nanargmax(sharpe))
+    ax.plot([0.0, risks[i]], [rf, rets[i]], linestyle="--", label="CML")
+
+    ax.set_xlabel("Risk (stdev)")
+    ax.set_ylabel("Expected Return")
+    ax.set_title("Efficient Frontier + Capital Market Line")
+    ax.grid(True)
+    ax.legend(loc="best")
     return ax
 
 
-def plot_risk_contributions(w, Sigma, labels: Optional[list[str]] = None, *, ax=None):
-    """Bar chart of total risk contributions as fraction of portfolio σ."""
+def plot_weights_along_frontier(weights: "pd.DataFrame", *, ax=None, labels: Optional[Sequence[str]] = None):
+    """
+    Stacked area chart of weights across frontier points.
+    weights: DataFrame shape (k, n), index=frontier index, columns=assets (w_* or names)
+    """
+    if ax is None:
+        _, ax = plt.subplots()
+
+    x = range(len(weights))
+    series = [weights[c].to_numpy() for c in weights.columns]
+    ax.stackplot(x, series, labels=(labels if labels else list(weights.columns)))
+    ax.set_xlabel("Frontier Index")
+    ax.set_ylabel("Weight")
+    ax.set_ylim(0.0, 1.0)
+    ax.set_title("Weights Along Frontier")
+    if labels or len(weights.columns) <= 12:
+        ax.legend(loc="upper right", ncols=3)
+    ax.grid(True, axis="y", alpha=0.2)
+    return ax
+
+
+def plot_risk_contributions(w, Sigma, labels: Optional[Sequence[str]] = None, *, ax=None):
+    """
+    Bar chart of total risk contributions as fraction of portfolio stdev.
+    """
     if ax is None:
         _, ax = plt.subplots()
 
     w = np.asarray(w, dtype=float)
     Sigma = np.asarray(Sigma, dtype=float)
-    mrc = Sigma @ w                     # marginal risk contribution
-    trc = w * mrc                       # total risk contribution
-    vol = float(np.sqrt(w @ Sigma @ w))
+
+    mrc = Sigma @ w
+    trc = w * mrc
+    vol = float(np.sqrt(max(w @ Sigma @ w, 0.0)))
     frac = trc / vol if vol > 0 else trc
 
     idx = np.arange(len(w))
     ax.bar(idx, frac)
     if labels:
-        ax.set_xticks(idx, labels, rotation=45, ha="right")
+        ax.set_xticks(idx, labels, rotation=0)
     ax.set_ylabel("Risk Contribution (fraction of σ)")
     ax.set_title("Total Risk Contributions")
     ax.grid(True, axis="y", alpha=0.3)
     return ax
 
 
-def plot_corr_heatmap(Sigma, labels: Optional[list[str]] = None, *, ax=None):
-    """Correlation heatmap derived from covariance matrix Σ."""
+def plot_corr_heatmap(Sigma, labels: Optional[Sequence[str]] = None, *, ax=None):
+    """
+    Heatmap of correlation implied by covariance Σ.
+    """
     if ax is None:
         _, ax = plt.subplots()
 
