@@ -6,7 +6,7 @@ from datetime import datetime
 project = "qpfolio"
 author = "Rolf Carlson"
 copyright = f"{datetime.now():%Y}, {author}"
-release = "0.1.5"
+release = "0.1.6"
 
 sys.path.insert(0, os.path.abspath(".."))
 
