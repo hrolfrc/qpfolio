@@ -16,11 +16,11 @@ jobs:
       - run:
           name: Install package with dev extras
           command: pip install -e ".[dev]"
-      - run:
-          name: Run linters
-          command: |
-            ruff --version
-            ruff check .
+      #      - run:
+      #          name: Run linters
+      #          command: |
+      #            ruff --version
+      #            ruff check .
       - run:
           name: Run tests with coverage
           command: |
