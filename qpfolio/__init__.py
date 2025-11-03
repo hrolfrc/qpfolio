@@ -7,4 +7,4 @@ __all__ = ["__version__"]
 try:
     __version__ = version("qpfolio")
 except PackageNotFoundError:  # pragma: no cover
-    __version__ = "0.1.6"
+    __version__ = "0.1.7"
