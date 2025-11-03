@@ -1,0 +1,21 @@
+{
+  "generated_at_utc": "2025-11-03T00:59:35+00:00",
+  "git_commit": "9ab4d7b86a574b20362ac473c30adc510d5ed041",
+  "params": {
+    "n_assets": 6,
+    "n_days": 252,
+    "seed": 42,
+    "targets": [
+      0.06,
+      0.07,
+      0.08,
+      0.09,
+      0.1,
+      0.11000000000000001,
+      0.12000000000000001,
+      0.13,
+      0.14
+    ]
+  },
+  "notes": "Artifacts generated with REAL qpfolio solver and simulation."
+}
