@@ -58,15 +58,18 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - lint_and_test
-
-  release:
-    when: on_tag
-    jobs:
-      - publish_pypi:
-          context: pypi   # CircleCI context that contains PYPI_TOKEN
+      - lint_and_test:
+          # run tests on branches AND tags
           filters:
             tags:
-              only: /^v.*/
+              only: /.*/
+
+  release:
+    jobs:
+      - publish_pypi:
+          context: pypi   # CircleCI context that holds PYPI_TOKEN
+          filters:
             branches:
               ignore: /.*/
+            tags:
+              only: /^v.*/
